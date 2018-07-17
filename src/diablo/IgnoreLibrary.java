@@ -53,8 +53,6 @@ public enum IgnoreLibrary implements Saveable
     
     IgnoreLibrary()
     {
-        
-        
         final EnumSet<Runeword> tempRw = Utilities.readSerializable(new File(FILE_NAME_RUNEWORDS));
         final EnumSet<ItemType> tempIt = Utilities.readSerializable(new File(FILE_NAME_TYPES));
         runewords = tempRw != null ? tempRw : EnumSet.noneOf(Runeword.class);

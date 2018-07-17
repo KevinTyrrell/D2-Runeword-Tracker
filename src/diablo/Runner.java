@@ -34,14 +34,13 @@ import diablo.rune.Runeword;
 import util.Utilities;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.ToDoubleFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Runner
 {
-    /* Runes which the player posses. */
+    /* Runes which the player possess. */
     private static final RuneLibrary runes = RuneLibrary.INSTANCE;
     /* Ignored runewords and item types. */
     private static final IgnoreLibrary ignored = IgnoreLibrary.INSTANCE;
@@ -52,7 +51,7 @@ public class Runner
     private static boolean terminate = false;
     
     /* Threshold of when a runeword should be tracked. */
-    private static final float COMPLETION_THRESHOLD = 25.0f;
+    private static final float COMPLETION_THRESHOLD = 0.25f;
 
     /**
      * Parses through specified string(s) and returns Enum values of the class which match.
@@ -106,7 +105,7 @@ public class Runner
         System.out.println();
 
         final String command = inputs[0];
-        inputs[0] = null; // Makes parsing a bit faster.
+        inputs[0] = null; // Allows us to double-dip on the user input.
         switch(command)
         {
         case "add": parseEnums(Rune.class, inputs)
@@ -153,30 +152,6 @@ public class Runner
         /* Display the splash screen. */
         printSplashScreen();
         
-        /* Rank every runeword. The most expensive Runeword is #1, followed by #2, etc. */
-        final AtomicInteger rankCounter = new AtomicInteger();
-        final Map<Runeword, Integer> wordRankings = Arrays.stream(Runeword.values())
-                .sorted(new Runeword.Comparator().reversed())
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(key -> key, value -> rankCounter.incrementAndGet(),
-                                (a, b) -> a, LinkedHashMap::new),
-                        Collections::unmodifiableMap));
-        
-        /* Function which grades the player's completion of a runeword, from 0 (no progress) to 1 (completed). */
-        final ToDoubleFunction<Runeword> progressFunc = rw -> rw.getRunes().entrySet().stream()
-                .mapToDouble(entry ->
-                {
-                    final Rune r = entry.getKey();
-                    final Map<Rune, Integer> runeCount = runes.get();
-                    return !runeCount.containsKey(r) ? 0
-                            : Math.min(entry.getValue(), runeCount.get(r)) * (1 / r.getRarity());
-                })
-                .sum() /
-                rw.getRunes().entrySet().stream()
-                        .mapToDouble(entry -> entry.getValue() * (1 / entry.getKey().getRarity()))
-                        .sum();
-
-        
         // ####################################################################################################
         final String divider = String.join("", Collections.nCopies(100, "."));
         // # RUNEWORD            # RANK # COMPLETION # WORD               #   BASES
@@ -184,37 +159,49 @@ public class Runner
         
         do
         {
+            /* Completion progress towards all tracked Runewords. */
+            final Map<Runeword, Double> runewordProgress = new HashMap<>();
+            
             /* Watch only the runewords the user cares for and that they are in progress towards. */
-            final Set<Runeword> watchedWords = wordRankings.keySet().stream()
+            final Set<Runeword> watchedWords = Runeword.RANKINGS.keySet().stream()
                     /* Ignore runewords that the user has ignored. */
                     .filter(rw -> !ignored.getRunewords().contains(rw))
                     /* Ignore runewords whose bases are all ignored. */
                     .filter(rw -> !rw.getTypes().stream()
                             .allMatch(ignored.getTypes()::contains))
-                    
-                    .filter(rw -> rw.getRunes().entrySet().stream()
-                            .anyMatch(entry -> runes.get().containsKey(entry.getKey())))
+                    /* Filter out Runewords which we lack enough progress towards. */
+                    .filter(rw -> 
+                    {
+                        final double progress = rw.calculateProgress(runes.get());
+                        if (progress >= COMPLETION_THRESHOLD)
+                        {
+                            runewordProgress.put(rw, progress);
+                            return true;
+                        }
+                        
+                        return false;
+                    })
                     .collect(Collectors.collectingAndThen(
                             Collectors.toCollection(LinkedHashSet::new),
                             Collections::unmodifiableSet));
 
+            /* Print out the table of data. */
             System.out.printf(fmt, "RUNEWORD", "RANK", "COMPLETION", "WORD", "BASE(S)");
             watchedWords.stream()
-                    .map(rw -> Map.entry(rw, 100 * progressFunc.applyAsDouble(rw)))
-                    .filter(rwProgress -> rwProgress.getValue() >= COMPLETION_THRESHOLD)
-                    .map(rwProgress ->
+                    .map(rw -> Map.entry(rw, 100 * runewordProgress.get(rw)))
+                    .map(rwProgEntry ->
                     {
-                        final Runeword rw = rwProgress.getKey();
-                        return new String[] {
+                        final Runeword rw = rwProgEntry.getKey();
+                        return Stream.of(
                                 rw.getName(),
-                                wordRankings.get(rw).toString(),
-                                String.format("%.2f%%", rwProgress.getValue()),
+                                Runeword.RANKINGS.get(rw).toString(),
+                                String.format("%.2f%%", rwProgEntry.getValue()),
                                 rw.getWord(),
                                 rw.getTypes().stream()
                                         .filter(it -> !ignored.getTypes().contains(it))
                                         .map(ItemType::toString)
-                                        .collect(Collectors.joining(", "))
-                        };
+                                        .collect(Collectors.joining(", ")))
+                                .toArray(String[]::new);
                     })
                     .forEach(line -> System.out.printf(fmt, line));
             System.out.println(divider);

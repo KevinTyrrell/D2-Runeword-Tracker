@@ -30,9 +30,9 @@ package diablo;
 
 public final class Version
 {
-    private static final int MAJOR = 1,    // Non-backwards compatible changes are made.
-        MINOR = 0,                  // Backwards compatible features implemented.
-        PATCH = 1;                  // Backwards compatible bug fixes implemented.
+    private static final int MAJOR = 1,     // Non-backwards compatible changes are made.
+        MINOR = 1,                          // Backwards compatible features implemented.
+        PATCH = 0;                          // Backwards compatible bug fixes implemented.
 
     /**
      * Version number of the problem.

@@ -67,8 +67,8 @@ public enum RuneLibrary implements Saveable
     public void add(final Rune... r)
     {
         Arrays.stream(r)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .forEach((rune, aLong) -> runes.merge(rune, aLong.intValue(), Integer::sum));
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)))
+                .forEach((rune, i) -> runes.merge(rune, i, Integer::sum));
     }
 
     /**
@@ -88,9 +88,8 @@ public enum RuneLibrary implements Saveable
     public void toss(final Rune... r)
     {
         Arrays.stream(r)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .forEach((rune, l) -> runes.computeIfPresent(rune, 
-                        (rn, i) -> i > l.intValue() ? i - l.intValue() : null));
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)))
+                .forEach((rune, i) -> runes.computeIfPresent(rune, (rn, h) -> h > i ? h - i : null));
     }
 
     /**

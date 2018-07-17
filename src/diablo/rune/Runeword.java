@@ -32,8 +32,10 @@ import diablo.item.ItemType;
 import diablo.item.ItemTypeContainer;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -135,10 +137,31 @@ public enum Runeword
     RAIN("Rain", () -> Stream.of(BODY_ARMOR).collect(Collectors.toSet()), ORT, MAL, ITH),
     TREACHERY("Treachery", () -> Stream.of(BODY_ARMOR).collect(Collectors.toSet()), SHAEL, THUL, LEM);
 
+    /* Name of the Runeword. */
     private final String name;
+    /* Word which activates the Runeword. */
     private final String word;
-    private final Map<Rune, Long> runes;
+    /* Runes which the Runeword requires, in order. */
+    private final Map<Rune, Integer> runes;
+    /* Item types in which this Runeword can go into. */
     private final Set<ItemType> types;
+    /* Summed rarity of all of the runes. */
+    private final double rarity;
+    
+    /* Read-only map sorted by most rare Runeword -> most common. */
+    public static final Map<Runeword, Integer> RANKINGS;
+    
+    static
+    {
+        /* Rank every runeword. The most rare Runeword is #1, followed by #2, etc. */
+        final AtomicInteger rankCounter = new AtomicInteger();        
+        RANKINGS = Arrays.stream(Runeword.values())
+                .sorted(new Runeword.Comparator().reversed())
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(Function.identity(), value -> rankCounter.incrementAndGet(), 
+                                (a, b) -> a, LinkedHashMap::new), 
+                        Collections::unmodifiableMap));
+    }
 
     Runeword(final String name, final Supplier<Set<ItemType>> types, final Rune... runes)
     {
@@ -148,18 +171,56 @@ public enum Runeword
         assert runes.length > 0;
 
         this.name = name;
-        this.word = Arrays.stream(runes).map(Rune::getName).collect(Collectors.joining());
         /* Sort the runes in descending order, map to Rune->Quantity, and make map read-only. */
         this.runes = Arrays.stream(runes)
                 .sorted(Collections.reverseOrder())
                 .collect(Collectors.collectingAndThen(
-                        Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()),
+                        Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.summingInt(e -> 1)),
                         Collections::unmodifiableMap));
         this.types = Collections.unmodifiableSet(types.get());
+
+        word = Arrays.stream(runes).map(Rune::getName).collect(Collectors.joining());
+        /* Sum the total rarity of all the runes in the word. */
+        rarity = this.runes.entrySet().stream()
+                .mapToDouble(entry -> entry.getValue() * (1 / entry.getKey().getRarity()))
+                .sum();
     }
 
     /**
-     * @return name of the Runeword
+     * Calculates a progress percentage for the Runeword to be completed.
+     * A Runeword is 100% complete when all Runes it requires are collected.
+     * Runes have weighted rarities, so higher runes make more of an impact.
+     * @param runes Runes the user owns.
+     * @return percentage of completion (between 0.0% and 1.0% inclusive).
+     */
+    public double calculateProgress(final Map<Rune, Integer> runes)
+    {
+        assert runes != null;
+        return this.runes.entrySet().stream()
+                .filter(entry -> runes.containsKey(entry.getKey()))
+                .mapToDouble(entry -> 
+                {
+                    final Rune r = entry.getKey();
+                    return Math.min(entry.getValue(), runes.get(r)) * calculateProgress(r);
+                })
+                .sum();
+    }
+
+    /**
+     * Calculates a progress percentage for the Runeword to be completed.
+     * A Runeword is 100% complete when all Runes it requires are collected.
+     * Runes have weighted rarities, so higher runes make more of an impact.
+     * @param rune Rune the user owns.
+     * @return percentage of completion (between 0.0% and 1.0% inclusive).
+     */
+    public double calculateProgress(final Rune rune)
+    {
+        assert rune != null;
+        return (1 / rune.getRarity()) / rarity;
+    }
+
+    /**
+     * @return Name of the Runeword.
      */
     public String getName()
     {
@@ -167,7 +228,7 @@ public enum Runeword
     }
 
     /**
-     * @return runeword sequence
+     * @return Sequence of Runes of the Runeword
      */
     public String getWord()
     {
@@ -175,17 +236,19 @@ public enum Runeword
     }
 
     /**
-     * @return number of sockets needed for the runeword
+     * @return Number of sockets required for the Runeword.
      */
     public int getRequiredSockets()
     {
-        return runes.values().stream().mapToInt(v -> v.intValue()).sum();
+        return runes.values().stream()
+                .mapToInt(e -> e)
+                .sum();
     }
 
     /**
-     * @return
+     * @return Runes and their quantity for the Runeword.
      */
-    public Map<Rune, Long> getRunes()
+    public Map<Rune, Integer> getRunes()
     {
         return runes;
     }
@@ -206,7 +269,7 @@ public enum Runeword
         {
             if (o1 == o2) return 0;
 
-            final Iterator<Map.Entry<Rune, Long>> iter_o1 = o1.runes.entrySet().iterator(),
+            final Iterator<Map.Entry<Rune, Integer>> iter_o1 = o1.runes.entrySet().iterator(),
                     iter_o2 = o2.runes.entrySet().iterator();
 
             while (true)
@@ -216,13 +279,13 @@ public enum Runeword
                 if (!iter_o2.hasNext())
                     return 1;
 
-                final Map.Entry<Rune, Long> o1_rune = iter_o1.next(), o2_rune = iter_o2.next();
+                final Map.Entry<Rune, Integer> o1_rune = iter_o1.next(), o2_rune = iter_o2.next();
 
-                // The runeword with the higher diablo.rune trumps those with lower runes.
+                // The Runeword with the higher Rune trumps those with lower Runes.
                 final int rune_compare = o1_rune.getKey().compareTo(o2_rune.getKey());
                 if (rune_compare != 0) return rune_compare;
 
-                // If they both have the same diablo.rune, compare based on quantity of that diablo.rune.
+                // If they both have the same Rune, compare based on quantity of that Rune.
                 final int quantity_compare = Long.compare(o1_rune.getValue(), o2_rune.getValue());
                 if (quantity_compare != 0) return quantity_compare;
             }

@@ -31,14 +31,13 @@ package diablo;
 import diablo.item.ItemType;
 import diablo.rune.Rune;
 import diablo.rune.Runeword;
+import util.Utilities;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static diablo.item.ItemType.BODY_ARMOR;  // TODO
 
 public class Runner
 {
@@ -47,11 +46,13 @@ public class Runner
     /* Ignored runewords and item types. */
     private static final IgnoreLibrary ignored = IgnoreLibrary.INSTANCE;
 
-    // TODO: Determine if this can be removed.
-    static { Object a = BODY_ARMOR; } // Ensure ItemType class is loaded before this one.
-
+    /* Scanner to handle user input. */
+    private static final Scanner sc = new Scanner(System.in);
+    /* Flag which determines if the program should end its runtime. */
+    private static boolean terminate = false;
+    
     /* Threshold of when a runeword should be tracked. */
-    private static final float COMPLETION_THRESHOLD = 20.0f;
+    private static final float COMPLETION_THRESHOLD = 25.0f;
 
     /**
      * Parses through specified string(s) and returns Enum values of the class which match.
@@ -80,8 +81,78 @@ public class Runner
                         Collections::unmodifiableList));
     }
 
+    /**
+     * Prints the main menu and waits for user input.
+     * @return False if an invalid input was entered.
+     */
+    private static boolean waitMenu()
+    {
+        final String MENU = "COMMANDS---------\n" +
+                "* add\t\t(space separated list of runes)\n" +
+                "* toss\t\t(space separated list of runes)\n" +
+                "* ignore\t(space separated list of runewords/item types)\n" +
+                "* quit\t\t(ends the program)\n" +
+                "\n-----Input: ";
+        
+        final String runeLibStr = runes.toString();
+        final String runeLibDiv = Utilities.repeatString("~", runeLibStr.length());
+        System.out.printf("\nRUNE LIBRARY\n%s\n%s\n%s\n\n", runeLibDiv, runeLibStr, runeLibDiv);
+
+        System.out.print(MENU);
+        final String[] inputs = sc.nextLine()
+                .replaceAll("[^a-zA-Z\\s_]+", "")
+                .toLowerCase()
+                .split("\\s+");
+        System.out.println();
+
+        final String command = inputs[0];
+        inputs[0] = null; // Makes parsing a bit faster.
+        switch(command)
+        {
+        case "add": parseEnums(Rune.class, inputs)
+                .forEach(runes::add); break;
+        case "toss": parseEnums(Rune.class, inputs)
+                .forEach(runes::toss); break;
+        case "ignore":
+            parseEnums(ItemType.class, inputs)
+                    .forEach(ignored::toggle);
+            parseEnums(Runeword.class, inputs)
+                    .forEach(ignored::toggle); break;
+        case "quit": System.err.println("Goodbye"); return true;
+        default: System.err.println("Command was unrecognized."); return false;
+        }
+            
+        /* Save the libraries to the hard disk. */
+        Stream.of(runes, ignored)
+                /* For some reason if you method reference here, you will get an exception. -JDK 9.0.4 */
+                .forEach(e -> e.save());
+        return true;
+    }
+
+    /**
+     * Prints the splash screen to the console window.
+     */
+    private static void printSplashScreen()
+    {
+        final String title = "Diablo II Runeword Tracker";
+        final String name = "Kevin Tyrrell";
+        final String url = "https://github.com/KevinTyrrell/D2-Runeword-Tracker";
+        
+        final int width = 80;
+        final String dv1 = Utilities.repeatString("~", (width - 2 - title.length()) / 2);
+        final String dv2 = Utilities.repeatString(" ", (width - 2 - name.length()) / 2);
+        final String dv3 = Utilities.repeatString(" ", (width - 2 - url.length()) / 2);
+        
+        System.out.printf("\n\n\n%s %s %s\n\n%s %s %s\n\n%s %s %s\n%s\n\n\n",
+                dv1, title, dv1, dv2, name, dv2, dv3, url, dv3, Utilities.repeatString("~", width)); 
+        Utilities.unsafeSleep(1500);
+    }
+
     public static void main(String[] args)
-    {        
+    {
+        /* Display the splash screen. */
+        printSplashScreen();
+        
         /* Rank every runeword. The most expensive Runeword is #1, followed by #2, etc. */
         final AtomicInteger rankCounter = new AtomicInteger();
         final Map<Runeword, Integer> wordRankings = Arrays.stream(Runeword.values())
@@ -105,19 +176,13 @@ public class Runner
                         .mapToDouble(entry -> entry.getValue() * (1 / entry.getKey().getRarity()))
                         .sum();
 
-        final String MENU = "COMMANDS---------\n" +
-                "* add\t\t(space separated list of runes)\n" +
-                "* toss\t\t(space separated list of runes)\n" +
-                "* ignore\t(space separated list of runewords/item types)\n" +
-                "* quit\t\t(ends the program)\n" +
-                "\n-----Input: ";
+        
         // ####################################################################################################
         final String divider = String.join("", Collections.nCopies(100, "."));
         // # RUNEWORD            # RANK # COMPLETION # WORD               #   BASES
         final String fmt = divider.concat("\n| %-19s | %-4s | %-10s | %-18s | %-33s |\n");
-
-        final Scanner sc = new Scanner(System.in);
-        while (true)
+        
+        do
         {
             /* Watch only the runewords the user cares for and that they are in progress towards. */
             final Set<Runeword> watchedWords = wordRankings.keySet().stream()
@@ -151,38 +216,8 @@ public class Runner
                     .forEach(line -> System.out.printf(fmt, line));
             System.out.println(divider);
             
-            final String runeLibStr = runes.toString();
-            final String runeLibDiv = new String(new char[runeLibStr.length()]).replace("\0", "~");
-            System.out.printf("\nRUNE LIBRARY\n%s\n%s\n%s\n\n", runeLibDiv, runeLibStr, runeLibDiv);
-            
-            System.out.print(MENU);
-            final String[] inputs = sc.nextLine()
-                    .replaceAll("[^a-zA-Z\\s_]+", "")
-                    .toLowerCase()
-                    .split("\\s+");
-            System.out.println();
-
-            final String command = inputs[0];
-            inputs[0] = null; // Makes parsing a bit faster.
-            switch(command)
-            {
-            case "add": parseEnums(Rune.class, inputs)
-                    .forEach(runes::add); break;
-            case "toss": parseEnums(Rune.class, inputs)
-                    .forEach(runes::toss); break;
-            case "ignore":
-                parseEnums(ItemType.class, inputs)
-                        .forEach(ignored::toggle);
-                parseEnums(Runeword.class, inputs)
-                        .forEach(ignored::toggle); break;
-            case "quit": System.err.println("Goodbye"); return;
-            default: System.err.println("Command was unrecognized."); continue;
-            }
-            
-            /* Save the libraries to the hard disk. */
-            Stream.of(runes, ignored)
-                    /* For some reason if you method reference here, you will get an exception. -JDK 9.0.4 */
-                    .forEach(e -> e.save());
-        }
+            /* Display the main menu and take in user-input. */
+            while (!waitMenu());
+        } while (!terminate);
     }
 }

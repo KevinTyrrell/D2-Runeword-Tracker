@@ -49,7 +49,7 @@ public enum IgnoreLibrary implements Saveable
     final EnumSet<ItemType> types;
 
     private final static String FILE_NAME_RUNEWORDS = "IgnoredWords.ser",
-            FILE_NAME_TYPES = "IgnoredTypes";
+            FILE_NAME_TYPES = "IgnoredTypes.ser";
     
     IgnoreLibrary()
     {

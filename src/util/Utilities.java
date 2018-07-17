@@ -29,9 +29,25 @@ package util;
  */
 
 import java.io.*;
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
 
 public final class Utilities
 {
+    /**
+     * Repeats a String 'n' times.
+     * @param str String to be repeated.
+     * @param times Amount of times for the String to repeat.
+     * @return Repeated String.
+     */
+    public static String repeatString(final String str, final int n)
+    {
+        assert str != null;
+        assert !str.isEmpty();
+        assert n > 0;
+        return new String(new char[n]).replace("\0", str);
+    }
+    
     /**
      * Reads a serialized object from the storage medium.
      * @param f File to read from.
@@ -53,5 +69,21 @@ public final class Utilities
         catch (IOException ignored) { }
         
         return null;
+    }
+
+    /**
+     * Sleeps for a specified amount of milliseconds.
+     * @param ms Milliseconds to sleep for.
+     */
+    public static void unsafeSleep(final long ms)
+    {
+        try
+        {
+            TimeUnit.MILLISECONDS.sleep(ms);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

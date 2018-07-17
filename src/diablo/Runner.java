@@ -118,7 +118,7 @@ public class Runner
                     .forEach(ignored::toggle);
             parseEnums(Runeword.class, inputs)
                     .forEach(ignored::toggle); break;
-        case "quit": System.err.println("Goodbye"); return true;
+        case "quit": System.err.println("Goodbye"); terminate = true; return true;
         default: System.err.println("Command was unrecognized."); return false;
         }
             
@@ -134,7 +134,7 @@ public class Runner
      */
     private static void printSplashScreen()
     {
-        final String title = "Diablo II Runeword Tracker";
+        final String title = "Diablo II Runeword Tracker ".concat(Version.NUMBER);
         final String name = "Kevin Tyrrell";
         final String url = "https://github.com/KevinTyrrell/D2-Runeword-Tracker";
         
@@ -145,7 +145,7 @@ public class Runner
         
         System.out.printf("\n\n\n%s %s %s\n\n%s %s %s\n\n%s %s %s\n%s\n\n\n",
                 dv1, title, dv1, dv2, name, dv2, dv3, url, dv3, Utilities.repeatString("~", width)); 
-        Utilities.unsafeSleep(1500);
+        Utilities.unsafeSleep(2500);
     }
 
     public static void main(String[] args)
@@ -186,9 +186,12 @@ public class Runner
         {
             /* Watch only the runewords the user cares for and that they are in progress towards. */
             final Set<Runeword> watchedWords = wordRankings.keySet().stream()
+                    /* Ignore runewords that the user has ignored. */
                     .filter(rw -> !ignored.getRunewords().contains(rw))
+                    /* Ignore runewords whose bases are all ignored. */
                     .filter(rw -> !rw.getTypes().stream()
                             .allMatch(ignored.getTypes()::contains))
+                    
                     .filter(rw -> rw.getRunes().entrySet().stream()
                             .anyMatch(entry -> runes.get().containsKey(entry.getKey())))
                     .collect(Collectors.collectingAndThen(

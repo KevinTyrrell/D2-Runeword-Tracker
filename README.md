@@ -6,7 +6,7 @@ Console program which helps players understand how close they are to completing 
 
 The following are required:
 
-* [Java](https://java.com/en/download/) *(9.0.4 or higher)*
+* [Java](http://www.oracle.com/technetwork/java/javase/downloads/index.html) *(9.0.4 or higher)*
 
 *You can test what your Java version is by doing the following:*
 
@@ -29,15 +29,15 @@ Save files for Diablo 2 Runeword Tracker will be created in the directory the `j
 
 #### General Use
 
-Once the program is open, you should begin adding the runes you have in-game to the program.
+Once the program is open, you should begin adding the runes you have in-game to the program. To add runes, type the `add` command followed by a space separated list of runes. In my game, I have an Ort, Tal, and Tir rune, so I will type `add ort tal tir`. 
 
 ![Img](https://i.imgur.com/zZ5vGAa.png "Adding Runes")
 
-In my game, I have an Ort, Tal, and Tir rune. I can add them each individuall or all on one line with spaces to seperate them.
+Based on what runes you have, various runewords will be displayed.
 
 ![Img](https://i.imgur.com/VypktlG.png "Basic output")
 
-Ort, Tir, and Tal are all used for a lot of words, so I get a lot of results. Some runewords are omitted because I don't have enough of its runes for it to be considered worth tracking at the moment.
+Ort, Tir, and Tal are all used for a lot of words, so I get a lot of results. Some runewords are omitted because I don't have enough of its runes for it to be considered worth tracking at the moment. Let's break down everything that's shown here:
 
 |            |                                                                           |
 |------------|---------------------------------------------------------------------------|
@@ -47,15 +47,15 @@ Ort, Tir, and Tal are all used for a lot of words, so I get a lot of results. So
 | Word       | The order in which you place the runes into the base item.                |
 | Base(s)    | The bases that the Runeword is for, excluding those which you've ignored. |
 
-Why is Lore at 28%? I have half of the runes needed to make it. Doesn't that mean I'm 50% of the way there? Not quite. According to [the data provided by a user named Urlik](https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik) the chances of an Ort rune dropping is `48885` out of `1,000,000` rune drops. The Sol rune is a bit more uncommon, specifically `19916/1,000,000`. About twice as rare. This is why the final percentage of completion is ~28%. 
+Why is Lore at 28% completion? I have half of the runes needed to make it. Doesn't that mean I'm 50% of the way there? Not quite. According to [the data provided by a user named Urlik](https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik) the chances of an Ort rune dropping is `48885` out of `1,000,000` rune drops. The Sol rune is a bit more uncommon, specifically `19916/1,000,000`; about twice as rare. This is why the final percentage of completion is ~28%. 
 
-I don't actually want the tir rune, so I'm going to get rid of it.
+Let's say in-game, I were to sell some runes. I'll need to remove the rune(s) from the program as well. Removing runes is the same syntax as adding, except we will use the `toss` command.
 
 ```
 toss tir
 ```
 
-Also, I don't really care about the Runewords *Steel* and *Nadir*. I also don't care about Runewords for *Bows*, *Crossbows*, *Helms* and *Body Armor*. I can ignore them all with the following command:
+Not every runeword may be of interest to you. Or, perhaps you're a melee character and have no desire for Runewords that only go into bows or crossbows. In that case, we can use the `ignore` command to ignore any number of Runewords or Item types from being printed in the runeword chart. For runewords or types with multiple words, use `_` instead of a space. Ignore any other symbols in names. For example to ignore the *"Ancient's Pledge"* runeword, I would type `ignore ancients_pledge`.
 
 ```
 ignore steel bow nadir crossbow helm body_armor
@@ -63,7 +63,7 @@ ignore steel bow nadir crossbow helm body_armor
 
 ![Img](https://i.imgur.com/kuXqVyi.png "Tossing and ignoring")
 
-Understandably that doesn't leave us with many options. To un-ignore a runeword or item type, type `ignore` just like before and it will toggle the runeword or item type back to being tracked. To erase all tracked item types or runewords, you can also close the program, delete the `IgnoredTypes.ser` and `IgnoredWords.ser` files respectively, and re-start the program.
+To un-ignore a runeword or item type, type `ignore` just like before and it will toggle the runeword or item type back to being tracked. To erase all tracked item types or runewords, you can also close the program, delete the `IgnoredTypes.ser` and `IgnoredWords.ser` files respectively, and re-start the program.
 
 ![Img](https://i.imgur.com/ADspu0k.png "Completion")
 

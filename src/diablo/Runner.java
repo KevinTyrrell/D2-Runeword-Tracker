@@ -33,25 +33,24 @@ import diablo.rune.Rune;
 import diablo.rune.Runeword;
 import util.Utilities;
 
+import java.text.DecimalFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
 
 public class Runner
 {
     /* Runes which the player possess. */
     private static final RuneLibrary runes = RuneLibrary.INSTANCE;
-    /* Ignored runewords and item types. */
+    /* Ignored Runewords and item types. */
     private static final IgnoreLibrary ignored = IgnoreLibrary.INSTANCE;
 
     /* Scanner to handle user input. */
     private static final Scanner sc = new Scanner(System.in);
     /* Flag which determines if the program should end its runtime. */
     private static boolean terminate = false;
-    
-    /* Threshold of when a runeword should be tracked. */
-    private static final float COMPLETION_THRESHOLD = 0.25f;
 
     /**
      * Parses through specified string(s) and returns Enum values of the class which match.
@@ -93,9 +92,11 @@ public class Runner
                 "* quit\t\t(ends the program)\n" +
                 "\n-----Input: ";
         
+        final String RUNE_LIB_STR = "RUNE LIBRARY";
         final String runeLibStr = runes.toString();
-        final String runeLibDiv = Utilities.repeatString("~", runeLibStr.length());
-        System.out.printf("\nRUNE LIBRARY\n%s\n%s\n%s\n\n", runeLibDiv, runeLibStr, runeLibDiv);
+        final String runeLibDiv = Utilities.repeatString("~", 
+                Math.max(runeLibStr.length(), RUNE_LIB_STR.length()));
+        System.out.printf("\n%s\n%s\n%s\n%s\n\n", RUNE_LIB_STR, runeLibDiv, runeLibStr, runeLibDiv);
 
         System.out.print(MENU);
         final String[] inputs = sc.nextLine()
@@ -146,7 +147,7 @@ public class Runner
                 dv1, title, dv1, dv2, name, dv2, dv3, url, dv3, Utilities.repeatString("~", width)); 
         Utilities.unsafeSleep(2500);
     }
-
+    
     public static void main(String[] args)
     {
         /* Display the splash screen. */
@@ -155,18 +156,19 @@ public class Runner
         // ####################################################################################################
         final String divider = String.join("", Collections.nCopies(100, "."));
         // # RUNEWORD            # RANK # COMPLETION # WORD               #   BASES
-        final String fmt = divider.concat("\n| %-19s | %-4s | %-10s | %-18s | %-33s |\n");
+        final String fmt = divider.concat("\n| %-23s | %-4s | %-6s | %-18s | %-33.33s |\n");
+        final DecimalFormat df = new DecimalFormat("###.00");
         
         do
         {
             /* Completion progress towards all tracked Runewords. */
-            final Map<Runeword, Double> runewordProgress = new HashMap<>();
+            final Map<Runeword, Double> rwProgress = new TreeMap<>(new Runeword.Comparator().reversed());
             
-            /* Watch only the runewords the user cares for and that they are in progress towards. */
+            /* Watch only the Runewords the user cares for and that they are in progress towards. */
             final Set<Runeword> watchedWords = Runeword.RANKINGS.keySet().stream()
-                    /* Ignore runewords that the user has ignored. */
+                    /* Ignore Runewords that the user has ignored. */
                     .filter(rw -> !ignored.getRunewords().contains(rw))
-                    /* Ignore runewords whose bases are all ignored. */
+                    /* Ignore Runewords whose bases are all ignored. */
                     .filter(rw -> !rw.getTypes().stream()
                             .allMatch(ignored.getTypes()::contains))
                     /* Filter out Runewords which we lack enough progress towards. */
@@ -175,7 +177,7 @@ public class Runner
                         final double progress = rw.calculateProgress(runes.get());
                         if (progress >= COMPLETION_THRESHOLD)
                         {
-                            runewordProgress.put(rw, progress);
+                            rwProgress.put(rw, progress);
                             return true;
                         }
                         
@@ -184,18 +186,18 @@ public class Runner
                     .collect(Collectors.collectingAndThen(
                             Collectors.toCollection(LinkedHashSet::new),
                             Collections::unmodifiableSet));
-
+                    
             /* Print out the table of data. */
-            System.out.printf(fmt, "RUNEWORD", "RANK", "COMPLETION", "WORD", "BASE(S)");
+            System.out.printf(fmt, "RUNEWORD", "RANK", "STATUS", "WORD", "BASE(S)");
             watchedWords.stream()
-                    .map(rw -> Map.entry(rw, 100 * runewordProgress.get(rw)))
+                    .map(rw -> Map.entry(rw, 100 * rwProgress.get(rw)))
                     .map(rwProgEntry ->
                     {
                         final Runeword rw = rwProgEntry.getKey();
                         return Stream.of(
-                                rw.getName(),
-                                Runeword.RANKINGS.get(rw).toString(),
-                                String.format("%.2f%%", rwProgEntry.getValue()),
+                                rw.getName() + "(" + rw.getLevel() + ")",
+                                " ".concat(Runeword.RANKINGS.get(rw).toString()),
+                                String.format("%.5s%%", df.format(rwProgEntry.getValue())),
                                 rw.getWord(),
                                 rw.getTypes().stream()
                                         .filter(it -> !ignored.getTypes().contains(it))
@@ -205,6 +207,18 @@ public class Runner
                     })
                     .forEach(line -> System.out.printf(fmt, line));
             System.out.println(divider);
+
+            /* Indicate to the user what Rune(s) he should get rid of, if any. */
+            final Map<Rune, Integer> trashRunes = runes.findInsignificantRunes(rwProgress);
+            if (trashRunes.size() > 0)
+            {
+                final String tossStr = trashRunes.entrySet().stream()
+                        .map(runeNumEntry -> runeNumEntry.getKey().getName() + " (x" + runeNumEntry.getValue() + ")")
+                        .collect(Collectors.joining(", "));
+                final String tossDiv = Utilities.repeatString("-", tossStr.length());
+                final String TOSS_MSG = "Detected insignificant Rune(s). Selling them is highly recommended.";
+                System.out.printf("\n%s\n%s\n%s\n%s\n\n", TOSS_MSG, tossDiv, tossStr, tossDiv);
+            }
             
             /* Display the main menu and take in user-input. */
             while (!waitMenu());

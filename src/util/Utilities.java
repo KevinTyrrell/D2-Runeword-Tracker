@@ -29,6 +29,8 @@ package util;
  */
 
 import java.io.*;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
@@ -69,6 +71,20 @@ public final class Utilities
         catch (IOException ignored) { }
         
         return null;
+    }
+
+    /**
+     * Rounds a number to a specified amount of significant figures.
+     * @param d Number to round.
+     * @param sigFigures Significant figures to round to.
+     * @return Number rounded to the specified significant figured.
+     */
+    public static double roundSigFig(final double d, final int sigFigures)
+    {
+        assert sigFigures >= 1;
+        final BigDecimal big = new BigDecimal(d);
+        final MathContext mc = new MathContext(sigFigures);
+        return big.round(mc).doubleValue();
     }
 
     /**

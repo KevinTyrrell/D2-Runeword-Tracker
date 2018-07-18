@@ -29,12 +29,16 @@ package diablo;
  */
 
 import diablo.rune.Rune;
+import diablo.rune.Runeword;
 import util.Utilities;
 
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
 
 public enum RuneLibrary implements Saveable
 {
@@ -51,7 +55,7 @@ public enum RuneLibrary implements Saveable
     }
 
     /**
-     * Adds a rune to the library.
+     * Adds a Rune to the library.
      * @param r Rune to add.
      */
     public void add(final Rune r)
@@ -61,7 +65,7 @@ public enum RuneLibrary implements Saveable
     }
 
     /**
-     * Adds a rune or runes to the library.
+     * Adds a Rune or Rune(s) to the library.
      * @param r Rune(s) to add.
      */
     public void add(final Rune... r)
@@ -72,7 +76,7 @@ public enum RuneLibrary implements Saveable
     }
 
     /**
-     * Removes a rune from the library.
+     * Removes a Rune from the library.
      * @param r Rune to remove.
      */
     public void toss(final Rune r)
@@ -82,7 +86,7 @@ public enum RuneLibrary implements Saveable
     }
 
     /**
-     * Removes a rune or runes from the library.
+     * Removes a Rune or Rune(s) from the library.
      * @param r Rune(s) to remove.
      */
     public void toss(final Rune... r)
@@ -93,7 +97,43 @@ public enum RuneLibrary implements Saveable
     }
 
     /**
-     * @return map of runes corresponding with their quantity.
+     * Evaluates the Runes the player owns, progress towards the Runeword(s) they are tracking,
+     * and outputs a subset of Runes they own which give very little benefit towards the tracked Runeword(s).
+     * @param rwProgress Current progress towards each Runeword's completion.
+     * @return Collection of Runes and their quantities which should be tossed.
+     */
+    public Map<Rune, Integer> findInsignificantRunes(final Map<Runeword, Double> rwProgress)
+    {
+        assert rwProgress != null;
+        
+        /* Assume all Runes should be discarded. */
+        final Map<Rune, Integer> toToss = new TreeMap<>(runes);
+
+        rwProgress.entrySet().stream()
+                .forEach(rwProgEntry ->
+                {
+                    final double progressLeft = 1.0 - rwProgEntry.getValue();
+                    final Runeword rw = rwProgEntry.getKey();
+                    rw.getRunes().entrySet().stream()
+                            .map(runeNumEntry -> Stream.generate(runeNumEntry::getKey)
+                                    .limit(runeNumEntry.getValue()))
+                            .flatMap(Function.identity())
+                            .filter(toToss::containsKey)
+                            .forEach(r ->
+                            {
+                                final double runeProg = rw.calculateProgress(r);
+                                /* Is this Rune worth at least [CT%] of the remaining needed progress? */
+                                if (runeProg / COMPLETION_THRESHOLD >= progressLeft - runeProg)
+                                    /* Rune is valued towards current goals, keep it. */
+                                    toToss.computeIfPresent(r, (rn, h) -> h > 1 ? h - 1 : null);
+                            });
+                });
+
+        return Collections.unmodifiableMap(toToss);
+    }
+
+    /**
+     * @return map of Runes corresponding with their quantity.
      */
     public Map<Rune, Integer> get()
     {

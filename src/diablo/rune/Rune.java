@@ -70,7 +70,7 @@ public enum Rune
 
     /**
      * @param name - Name of the Rune.
-     * @param dropValue - Number of times dropped per one million diablo.rune drops.
+     * @param dropValue - Number of times dropped per one million Rune drops.
      */
     Rune(final String name, final long dropValue)
     {
@@ -90,7 +90,7 @@ public enum Rune
     }
 
     /**
-     * @return Percent chance for the diablo.rune to drop (from [0, 1]).
+     * @return Percent chance for the Rune to drop (from [0, 1]).
      */
     public double getRarity()
     {

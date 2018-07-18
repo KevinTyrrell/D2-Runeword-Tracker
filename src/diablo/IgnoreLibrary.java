@@ -60,9 +60,9 @@ public enum IgnoreLibrary implements Saveable
     }
 
     /**
-     * Toggles the runeword to be ignored or un-ignored.
+     * Toggles the Runeword to be ignored or un-ignored.
      * @param word Runeword to modify.
-     * @return True if the runeword is now ignored.
+     * @return True if the Runeword is now ignored.
      */
     public boolean toggle(final Runeword word)
     {

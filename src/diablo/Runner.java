@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 
 import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
 
-public class Runner
+public final class Runner
 {
     /* Runes which the player possess. */
     private static final RuneLibrary runes = RuneLibrary.INSTANCE;

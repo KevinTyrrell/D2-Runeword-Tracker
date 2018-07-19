@@ -188,7 +188,7 @@ public enum Runeword
         word = Arrays.stream(runes).map(Rune::getName).collect(Collectors.joining());
         /* Sum the total rarity of all the Runes in the word. */
         rarity = this.runes.entrySet().stream()
-                .mapToDouble(entry -> entry.getValue() * (1 / entry.getKey().getRarity()))
+                .mapToDouble(entry -> entry.getValue() * entry.getKey().getRarity())
                 .sum();
     }
 
@@ -222,7 +222,7 @@ public enum Runeword
     public double calculateProgress(final Rune rune)
     {
         assert rune != null;
-        return (1 / rune.getRarity()) / rarity;
+        return rune.getRarity() / rarity;
     }
 
     /**
@@ -282,30 +282,25 @@ public enum Runeword
 
     public static class Comparator implements java.util.Comparator<Runeword>
     {
+        /**
+         * Sums up the rarity of each Rune of a specified Runeword.
+         * @param rw Runeword to calculate.
+         * @return Rarity of the Runeword.
+         */
+        private static double calculateRarity(final Runeword rw)
+        {
+            assert rw != null;
+            return rw.getRunes().entrySet().stream()
+                    .mapToDouble(runeEntry -> runeEntry.getKey().getRarity() * runeEntry.getValue())
+                    .sum();
+        }
+
         @Override public int compare(final Runeword o1, final Runeword o2)
         {
+            assert o1 != null;
+            assert o2 != null;
             if (o1 == o2) return 0;
-
-            final Iterator<Map.Entry<Rune, Integer>> iter_o1 = o1.runes.entrySet().iterator(),
-                    iter_o2 = o2.runes.entrySet().iterator();
-
-            while (true)
-            {
-                if (!iter_o1.hasNext())
-                    return iter_o2.hasNext() ? -1 : 0;
-                if (!iter_o2.hasNext())
-                    return 1;
-
-                final Map.Entry<Rune, Integer> o1_rune = iter_o1.next(), o2_rune = iter_o2.next();
-
-                // The Runeword with the higher Rune trumps those with lower Runes.
-                final int rune_compare = o1_rune.getKey().compareTo(o2_rune.getKey());
-                if (rune_compare != 0) return rune_compare;
-
-                // If they both have the same Rune, compare based on quantity of that Rune.
-                final int quantity_compare = Long.compare(o1_rune.getValue(), o2_rune.getValue());
-                if (quantity_compare != 0) return quantity_compare;
-            }
+            return Double.compare(calculateRarity(o1), calculateRarity(o2));
         }
     }
 }

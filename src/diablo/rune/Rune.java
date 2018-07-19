@@ -67,18 +67,20 @@ public enum Rune
 
     private final String name;
     private final double rarity;
+    
+    /* Each Rune's drop value is out of 1,000,000M total Rune drops. */
+    private static final int DROP_SAMPLE_SIZE = 1000000;
 
     /**
      * @param name - Name of the Rune.
      * @param dropValue - Number of times dropped per one million Rune drops.
      */
-    Rune(final String name, final long dropValue)
+    Rune(final String name, final int dropValue)
     {
         assert name != null;
         assert dropValue > 0;
         this.name = name;
-        /* Rune's overall drop chance based on sample size of 1M. */
-        this.rarity = dropValue / 1000000.0;
+        rarity = 1 / ((double)dropValue / DROP_SAMPLE_SIZE);
     }
 
     /**

@@ -107,7 +107,7 @@ public enum RuneLibrary implements Saveable
         assert rwProgress != null;
         
         /* Assume all Runes should be discarded. */
-        final Map<Rune, Integer> toToss = new TreeMap<>(runes);
+        final Map<Rune, Integer> toToss = new EnumMap<>(runes);
 
         rwProgress.entrySet().stream()
                 .forEach(rwProgEntry ->
@@ -129,7 +129,14 @@ public enum RuneLibrary implements Saveable
                             });
                 });
 
-        return Collections.unmodifiableMap(toToss);
+        return toToss.entrySet().stream()
+                /* Hel Runes can be used for unsocketing, omit them. */
+                .filter(entry -> entry.getKey() != Rune.HEL)
+                /* High Runes should not be considered for tossing. */
+                .filter(entry -> !entry.getKey().isHighRune())
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (a, b) -> a, LinkedHashMap::new));
     }
 
     /**

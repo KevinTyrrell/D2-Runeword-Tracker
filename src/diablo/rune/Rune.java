@@ -65,12 +65,16 @@ public enum Rune
     CHAM("Cham", 42),
     ZOD("Zod", 12);
 
+    /* Name of the Rune. */
     private final String name;
+    /* Rarity of the Rune from (0, ∞). The higher the value, the more rare the Rune is. */
     private final double rarity;
     
+    /* Threshold of what is considered to be a High Rune [Mal, Zod]. */
+    public static final Rune HIGH_RUNE_THRESH = MAL;
     /* Each Rune's drop value is out of 1,000,000M total Rune drops. */
     private static final int DROP_SAMPLE_SIZE = 1000000;
-
+    
     /**
      * @param name - Name of the Rune.
      * @param dropValue - Number of times dropped per one million Rune drops.
@@ -81,6 +85,14 @@ public enum Rune
         assert dropValue > 0;
         this.name = name;
         rarity = 1 / ((double)dropValue / DROP_SAMPLE_SIZE);
+    }
+
+    /**
+     * @return True if this Rune is considered to be a High Rune.
+     */
+    public boolean isHighRune()
+    {
+        return compareTo(HIGH_RUNE_THRESH) >= 0;
     }
 
     /**

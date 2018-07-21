@@ -1,6 +1,8 @@
 ## Diablo 2 Runeword Tracker
 
-Console application which helps players understand how close they are to completing various Runewords. Utilities user-documented Rune drop statistics to calculate accurate estimates. Runs completely separate from Diablo 2 client and thus all Runes you obtain or have obtained must be entered in manually. The tracker outputs Runewords that you can make in a sorted fashion; from the most difficult to make to the most trivial. The user can choose to have the program ignore certain Runewords, or even ignore Runewords that go into certain item slots. The tracker will automatically indicate when Runes you own are no longer important. Your Rune library and ignoring preferences are saved automatically. Collect Runes in-game, enter them into the tracker, and let the program help you plan your character.
+Console application which helps Diablo 2: Lord of Destruction players visualize what Runeword(s) they can create. As the user collects Runes in-game and inputs them into the program, D2 Runeword Tracker will output an organized table of possible Runeword candidates that either can be made or are on-their-way to being completed. A weighted sum algorithm which takes into account documented Rune drop statistics is used to calculate incredibly accurate estimates of how close the player is to assembling all of the Runes needed for a given Runeword.
+
+D2 Runeword Tracker will automatically hide Runewords which it deems the player is nowhere near completing. In addition the user can also request the program hides specific Runewords or Runewords for a particular Item slot. The tracker will indicate when certain Runes are no longer beneficial to you and should be thrown out. Simply collect Runes in-game, enter them into the tracker, and let the program help plan your character.
 
 ### Prerequisites
 

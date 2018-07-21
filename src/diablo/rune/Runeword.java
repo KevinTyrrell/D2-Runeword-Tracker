@@ -35,7 +35,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,7 +66,8 @@ public enum Runeword
     STEALTH("Stealth", 17, () -> Stream.of(BODY_ARMOR).collect(Collectors.toSet()), TAL, ETH),
     STEEL("Steel", 13, () -> Stream.of(SWORD, AXE, MACE).collect(Collectors.toSet()), TIR, EL),
     STRENGTH("Strength", 25, ItemTypeContainer.MELEE_WEAPON::getValues, AMN, TIR),
-    VENOM("Venom", 49, ItemTypeContainer.WEAPON::getValues, TAL, DOL, MAL),
+    VENOM("Venom", 49, () -> Stream.concat(ItemTypeContainer.WEAPON.getValues().stream(),
+            Stream.of(ORB)).collect(Collectors.toSet()), TAL, DOL, MAL),
     WEALTH("Wealth", 43, () -> Stream.of(BODY_ARMOR).collect(Collectors.toSet()), LEM, KO, TIR),
     WHITE("White", 35, () -> Stream.of(WAND).collect(Collectors.toSet()), DOL, IO),
     ZEPHYR("Zephyr", 21, ItemTypeContainer.MISSILE_WEAPON::getValues, ORT, ETH),
@@ -183,8 +183,12 @@ public enum Runeword
                 .collect(Collectors.collectingAndThen(
                         Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.summingInt(e -> 1)),
                         Collections::unmodifiableMap));
-        this.types = Collections.unmodifiableSet(types.get());
-
+        /* Only include Item types which can actually have enough sockets to support the Runeword. */
+        this.types = types.get().stream()
+                .filter(t -> t.getMaxSockets() >= runes.length)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> EnumSet.noneOf(ItemType.class)),
+                        Collections::unmodifiableSet));
         word = Arrays.stream(runes).map(Rune::getName).collect(Collectors.joining());
         /* Sum the total rarity of all the Runes in the word. */
         rarity = this.runes.entrySet().stream()

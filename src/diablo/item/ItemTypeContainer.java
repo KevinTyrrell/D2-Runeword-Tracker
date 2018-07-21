@@ -32,6 +32,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Describes a container that holds multiple Item types.
+ * This is needed as certain Runewords may specify multiple
+ * Item types in a grouping such as "ALL WEAPONS". Thus here,
+ * there is a hierarchy of containers which hold those Item types.
+ */
 public enum ItemTypeContainer
 {
     SHIELD,
@@ -39,7 +45,9 @@ public enum ItemTypeContainer
     MELEE_WEAPON(WEAPON),
     MISSILE_WEAPON(WEAPON);
 
+    /* Item types inside the container (cyclic linking if EnumSet). */
     private final Set<ItemType> types = new HashSet<>();
+    /* Container which includes this sub-container. */
     private final ItemTypeContainer parent;
 
     ItemTypeContainer(final ItemTypeContainer parent)
@@ -53,8 +61,10 @@ public enum ItemTypeContainer
     }
 
     /**
-     *
-     * @param type
+     * Recursive method which allows containers to have hierarchy.
+     * If an Item type container has a parent, any added types to
+     * this container are also reflected in the parent.
+     * @param type Item type to add to the container.
      */
     void addType(final ItemType type)
     {

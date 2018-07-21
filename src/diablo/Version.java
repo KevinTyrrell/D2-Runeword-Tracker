@@ -30,12 +30,15 @@ package diablo;
 
 public final class Version
 {
-    private static final int MAJOR = 1,     // Non-backwards compatible changes are made.
-        MINOR = 2,                          // Backwards compatible features implemented.
-        PATCH = 0;                          // Backwards compatible bug fixes implemented.
+    private static final int MAJOR = 1,     /* Non-backwards compatible changes are made. */
+        MINOR = 3,                          /* Backwards compatible features implemented. */
+        PATCH = 0;                          /* Backwards compatible bug fixes implemented. */
+    
+    /* Version format for String representations. */
+    private static final String FORMAT = "v%d.%d.%d";
 
     /**
-     * Version number of the problem.
+     * Diablo 2 Runeword Tracker semantic version number.
      */
-    public static final String NUMBER = String.format("v%d.%d.%d", MAJOR, MINOR, PATCH);        
+    public static final String NUMBER = String.format(FORMAT, MAJOR, MINOR, PATCH);        
 }

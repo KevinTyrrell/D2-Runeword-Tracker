@@ -28,41 +28,73 @@ package diablo.item;
  * Date Created:    03/11/2018
  */
 
+/**
+ * Item types which Runewords can be placed into.
+ * Some Item types such as gloves, belts, boots, etc
+ * are omitted due to not being able to have sockets.
+ * 
+ * Note: Orbs can actually have Runewords placed in them.
+ */
 public enum ItemType
 {
-    SHIELD("Shield", ItemTypeContainer.SHIELD),
-    AURIC_SHIELD("Auric Shield", ItemTypeContainer.SHIELD),
-    CLUB("Club", ItemTypeContainer.MELEE_WEAPON),
-    HAMMER("Hammer", ItemTypeContainer.MELEE_WEAPON),
-    MACE("Mace", ItemTypeContainer.MELEE_WEAPON),
-    SWORD("Sword", ItemTypeContainer.MELEE_WEAPON),
-    AXE("Axe", ItemTypeContainer.MELEE_WEAPON),
-    SCEPTER("Scepter", ItemTypeContainer.MELEE_WEAPON),
-    STAFF("Staff", ItemTypeContainer.MELEE_WEAPON),
-    ORB("Orb", ItemTypeContainer.MELEE_WEAPON),
-    WAND("Wand", ItemTypeContainer.MELEE_WEAPON),
-    CLAW("Claw", ItemTypeContainer.MELEE_WEAPON),
-    POLEARM("Polearm", ItemTypeContainer.MELEE_WEAPON),
-    BODY_ARMOR("Body Armor"),
-    HELM("Helm"),
-    BOW("Bow", ItemTypeContainer.MISSILE_WEAPON),
-    CROSSBOW("Crossbow", ItemTypeContainer.MISSILE_WEAPON);
+    AURIC_SHIELD("Auric Shield", 4, ItemTypeContainer.SHIELD),
+    AXE("Axe", 6, ItemTypeContainer.MELEE_WEAPON),
+    BODY_ARMOR("Body Armor", 4),
+    BOW("Bow", 6, ItemTypeContainer.MISSILE_WEAPON),
+    CLAW("Claw", 3, ItemTypeContainer.MELEE_WEAPON),
+    CLUB("Club", 3, ItemTypeContainer.MELEE_WEAPON),
+    CROSSBOW("Crossbow", 6, ItemTypeContainer.MISSILE_WEAPON),
+    HAMMER("Hammer", 6, ItemTypeContainer.MELEE_WEAPON),
+    HELM("Helm", 4),
+    MACE("Mace", 5, ItemTypeContainer.MELEE_WEAPON),
+    /* Orbs are not considered as a melee or missile weapon. */
+    ORB("Orb", 3),
+    POLEARM("Polearm", 6, ItemTypeContainer.MELEE_WEAPON),
+    SCEPTER("Scepter", 5, ItemTypeContainer.MELEE_WEAPON),
+    SHIELD("Shield", 4, ItemTypeContainer.SHIELD),
+    STAFF("Staff", 6, ItemTypeContainer.MELEE_WEAPON),
+    SWORD("Sword", 6, ItemTypeContainer.MELEE_WEAPON),
+    WAND("Wand", 2, ItemTypeContainer.MELEE_WEAPON);
 
+    /* Name of the Item type. */
     private final String name;
+    /* Max amount of sockets the Item type can have. */
+    private final int maxSockets;
 
-    ItemType(final String name, final ItemTypeContainer container)
+    ItemType(final String name, final int maxSockets, final ItemTypeContainer container)
     {
-        this(name);
+        this(name, maxSockets);
         assert container != null;
         container.addType(this);
     }
 
-    ItemType(final String name)
+    ItemType(final String name, final int maxSockets)
     {
         assert name != null;
+        assert maxSockets >= 0;
         this.name = name;
+        this.maxSockets = maxSockets;
     }
 
+    /**
+     * @return Name of the Item type.
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * @return Max amount of sockets that this Item type can have.
+     */
+    public int getMaxSockets()
+    {
+        return maxSockets;
+    }
+
+    /**
+     * @return String representation of the Item type.
+     */
     @Override public String toString()
     {
         return name;

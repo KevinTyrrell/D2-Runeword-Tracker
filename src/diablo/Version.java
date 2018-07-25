@@ -34,7 +34,7 @@ public final class Version
 {
     private static final int MAJOR = 2,     /* Non-backwards compatible changes are made. */
         MINOR = 0,                          /* Backwards compatible features implemented. */
-        PATCH = 0;                          /* Backwards compatible bug fixes implemented. */
+        PATCH = 1;                          /* Backwards compatible bug fixes implemented. */
     
     /* Version format for String representations. */
     private static final String FORMAT = "v%d.%d.%d";

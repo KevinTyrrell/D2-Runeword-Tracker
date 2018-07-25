@@ -92,7 +92,7 @@ public final class Tracker
 
                 System.out.println(Paragraph.Alignment.CENTER.align("COMMANDS", CONSOLE_WIDTH));
                 System.out.println(Utilities.repeatChar('-', CONSOLE_WIDTH));
-                final String MENU_FORMAT = "\t\t\t* %-8s\t(%s)\n";
+                final String MENU_FORMAT = "\t* %-8s\t(%s)\n";
                 System.out.println(Arrays.stream(Command.values())
                         .map(c -> String.format(MENU_FORMAT, c.getName(), c.getDescription()))
                         .collect(Collectors.joining()));

@@ -28,13 +28,17 @@ package diablo.rune;
  * Date Created:    03/09/2018
  */
 
+import console.Paragraph;
 import diablo.item.ItemType;
 import diablo.item.ItemTypeContainer;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -83,7 +87,7 @@ public enum Runeword
     DELIRIUM("Delirium", 51, () -> Stream.of(HELM).collect(Collectors.toSet()), LEM, IST, KO),
     DOOM("Doom", 67, () -> Stream.of(AXE, POLEARM, HAMMER).collect(Collectors.toSet()), HEL, OHM, UM, LO, CHAM),
     DURESS("Duress", 47, () -> Stream.of(BODY_ARMOR).collect(Collectors.toSet()), SHAEL, UM, THUL),
-    ENIGMA("Engima", 65, () -> Stream.of(BODY_ARMOR).collect(Collectors.toSet()), JAH, ITH, BER),
+    ENIGMA("Enigma", 65, () -> Stream.of(BODY_ARMOR).collect(Collectors.toSet()), JAH, ITH, BER),
     ETERNITY("Eternity", 63, ItemTypeContainer.MELEE_WEAPON::getValues, AMN, BER, IST, SOL, SUR),
     EXILE("Exile", 57, () -> Stream.of(AURIC_SHIELD).collect(Collectors.toSet()), VEX, OHM, IST, DOL),
     FAMINE("Famine", 65, () -> Stream.of(AXE, HAMMER).collect(Collectors.toSet()), FAL, OHM, ORT, JAH),
@@ -154,7 +158,12 @@ public enum Runeword
     public static final float COMPLETION_THRESHOLD = 0.25f;
     /* Read-only map sorted by most rare Runeword -> most common. */
     public static final Map<Runeword, Integer> RANKINGS;
-    
+
+    /* Descriptions of every Runeword. */
+    private static final Map<Runeword, Paragraph> descriptions = new EnumMap<>(Runeword.class);
+    /* File in which Runeword descriptions are stored. */
+    private static final File RW_DESCRIPTION_FILE = new File("res/Runewords.txt");
+
     static
     {
         /* Rank every Runeword. The most rare Runeword is #1, followed by #2, etc. */
@@ -165,6 +174,41 @@ public enum Runeword
                         Collectors.toMap(Function.identity(), value -> rankCounter.incrementAndGet(), 
                                 (a, b) -> a, LinkedHashMap::new), 
                         Collections::unmodifiableMap));
+
+        // TODO: Clean this up and put it in a better spot.
+        final Map<String, Runeword> t = Arrays.stream(values())
+                .collect(Collectors.toMap(Runeword::getName, Function.identity()));
+        final String regexp = "\\n$";
+        final StringBuilder bd = new StringBuilder();
+        try (final FileReader fr = new FileReader(RW_DESCRIPTION_FILE);
+             final BufferedReader br = new BufferedReader(fr))
+        {
+            while (br.ready())
+                bd.append(br.readLine()).append("\n");
+            final String doc = bd.toString();
+            bd.setLength(0);
+
+            final Pattern p = Pattern.compile("(.+?)\\n((.|\\n)+?)\\n\\n", Pattern.DOTALL);
+            final Matcher m = p.matcher(doc);
+
+            while (m.find())
+            {
+                assert m.groupCount() >= 3;
+                final String name = m.group(1);
+                final String description = m.group(2);
+                final Runeword rw = t.get(name);
+                final Paragraph par = new Paragraph(Paragraph.Alignment.CENTER,
+                        Stream.concat(
+                                Stream.of(rw.getName() + '(' + rw.getLevel() + ')'),
+                                Arrays.stream(description.split("\n")))
+                        .toArray(String[]::new));
+                descriptions.put(rw, par);
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     Runeword(final String name, final int level, final Supplier<Set<ItemType>> types, final Rune... runes)
@@ -269,6 +313,14 @@ public enum Runeword
     public Set<ItemType> getTypes()
     {
         return types;
+    }
+
+    /**
+     * @return Description of the Runeword, as if hovered-over in-game.
+     */
+    public Paragraph getDescription()
+    {
+        return descriptions.get(this);
     }
 
     /**

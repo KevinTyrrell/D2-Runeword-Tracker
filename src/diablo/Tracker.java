@@ -51,11 +51,13 @@ public final class Tracker
     private static final IgnoreLibrary ignored = IgnoreLibrary.INSTANCE;
     /* Scanner for taking in user-input. */
     private static final Scanner sc = new Scanner(System.in);
+    /* Maximum number of characters per line in the stdout. */
+    private static final int CONSOLE_WIDTH = 80;
 
     /* Inputs from the command line. */
     private static Deque<String> inputs = null;
-    /* Maximum number of characters per line in the stdout. */
-    private static final int CONSOLE_WIDTH = 80;
+    /* Focused Runeword will have its full description shown. */
+    private static Runeword focused = null;
 
     /* The state the tracker is currently in. */
     private static State current = State.SPLASH_SCREEN;
@@ -188,6 +190,25 @@ public final class Tracker
             }
         },
         /**
+         * A Runeword is being focused for more information.
+         */
+        FOCUSING_RUNEWORD
+        {
+            public State next()
+            {
+                final String input = !inputs.isEmpty() ? inputs.pollFirst() : "";
+                final Runeword rw = Runeword.fromString(input);
+                if (rw == null)
+                {
+                    System.out.printf("Error: No such Runeword of \"%.10s\" exists.\n\n", input);
+                    return DISPLAYING_RUNES;
+                }
+
+                focused = focused != rw ? rw : null;
+                return DISPLAYING_DATA;
+            }
+        },
+        /**
          * Displaying calculated table data.
          */
         DISPLAYING_DATA
@@ -224,7 +245,8 @@ public final class Tracker
                 final TextTable table = new TextTable("RUNEWORD", "RANK", "STATUS", "WORD", "BASE(S)");
                 watchedWords.stream()
                         .map(rw -> Stream.of(
-                                new Paragraph(Paragraph.Alignment.CENTER,
+                                // TODO: Clean this.
+                                focused == rw ? focused.getDescription() : new Paragraph(Paragraph.Alignment.CENTER,
                                         rw.getName() + '(' + rw.getLevel() + ')'),
                                 new Paragraph(Paragraph.Alignment.CENTER, Runeword.RANKINGS.get(rw).toString()),
                                 new Paragraph(String.format("%.5s%%", rwProgress.get(rw) * 100)),
@@ -299,6 +321,7 @@ public final class Tracker
         ADD("add", "space separated list of Runes", State.ADDING_RUNES),
         TOSS("toss", "space separated list of Runes", State.TOSSING_RUNES),
         IGNORE("ignore", "space separated list of Runewords/Item types", State.IGNORING_PREFS),
+        INFO("info", "name of the Runeword", State.FOCUSING_RUNEWORD),
         QUIT("quit", "ends the program", State.SHUTTING_DOWN);
 
         /* Name of the Command. */

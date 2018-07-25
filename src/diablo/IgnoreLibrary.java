@@ -30,13 +30,12 @@ package diablo;
 
 import diablo.item.ItemType;
 import diablo.rune.Runeword;
-import util.Utilities;
+import util.Saveable;
 
 import java.io.*;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 public enum IgnoreLibrary implements Saveable
 {
@@ -53,10 +52,10 @@ public enum IgnoreLibrary implements Saveable
     
     IgnoreLibrary()
     {
-        final EnumSet<Runeword> tempRw = Utilities.readSerializable(new File(FILE_NAME_RUNEWORDS));
-        final EnumSet<ItemType> tempIt = Utilities.readSerializable(new File(FILE_NAME_TYPES));
-        runewords = tempRw != null ? tempRw : EnumSet.noneOf(Runeword.class);
-        types = tempIt != null ? tempIt : EnumSet.noneOf(ItemType.class);
+        final EnumSet<Runeword> tr = Saveable.loadSerializable(new File(FILE_NAME_RUNEWORDS));
+        final EnumSet<ItemType> ti = Saveable.loadSerializable(new File(FILE_NAME_TYPES));
+        runewords = tr != null ? tr : EnumSet.noneOf(Runeword.class);
+        types = ti != null ? ti : EnumSet.noneOf(ItemType.class);
     }
 
     /**
@@ -92,7 +91,8 @@ public enum IgnoreLibrary implements Saveable
     {
         assert value != null;
         assert set != null;
-        
+
+        unsavedChanges = true;
         if (set.remove(value))
             return true;
         return set.add(value);
@@ -114,35 +114,29 @@ public enum IgnoreLibrary implements Saveable
         return Collections.unmodifiableSet(types);
     }
 
+    private boolean unsavedChanges = false;
+
     /**
      * Saves the object to the storage medium.
-     * 
+     *
      * @return True if the object was saved.
      */
-    @Override public boolean save()
+    @Override
+    public boolean save()
     {
-        final BiFunction<Serializable, File, Boolean> func = (serializable, file) ->
-        {
-            assert serializable != null;
-            assert file != null;
-            
-            try (final FileOutputStream fos = new FileOutputStream(file))
-            {
-                try (final ObjectOutputStream oos = new ObjectOutputStream(fos))
-                {
-                    oos.writeObject(serializable);
-                    return true;
-                }
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            
-            return false;
-        };
-        
-        return func.apply(runewords, new File(FILE_NAME_RUNEWORDS)) 
-                && func.apply(types, new File(FILE_NAME_TYPES));
+        unsavedChanges = !Saveable.saveSerializable(runewords, new File(FILE_NAME_RUNEWORDS))
+                || !Saveable.saveSerializable(types, new File(FILE_NAME_TYPES));
+        return !unsavedChanges;
+    }
+
+    /**
+     * Indicates if the Object has changes made since the last save.
+     *
+     * @return True if changes have been made since the last save.
+     */
+    @Override
+    public boolean hasUnsavedChanges()
+    {
+        return unsavedChanges;
     }
 }

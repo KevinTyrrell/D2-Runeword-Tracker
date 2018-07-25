@@ -28,10 +28,12 @@ package diablo;
  * Date Created:    07/17/2018
  */
 
+import java.time.LocalDate;
+
 public final class Version
 {
-    private static final int MAJOR = 1,     /* Non-backwards compatible changes are made. */
-        MINOR = 3,                          /* Backwards compatible features implemented. */
+    private static final int MAJOR = 2,     /* Non-backwards compatible changes are made. */
+        MINOR = 0,                          /* Backwards compatible features implemented. */
         PATCH = 0;                          /* Backwards compatible bug fixes implemented. */
     
     /* Version format for String representations. */
@@ -40,5 +42,10 @@ public final class Version
     /**
      * Diablo 2 Runeword Tracker semantic version number.
      */
-    public static final String NUMBER = String.format(FORMAT, MAJOR, MINOR, PATCH);        
+    public static final String NUMBER = String.format(FORMAT, MAJOR, MINOR, PATCH);
+
+    /**
+     * Date on which the release was compiled.
+     */
+    public static final LocalDate COMPILED_ON = LocalDate.of(2018, 7, 24);
 }

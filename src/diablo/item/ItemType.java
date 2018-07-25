@@ -28,6 +28,14 @@ package diablo.item;
  * Date Created:    03/11/2018
  */
 
+import diablo.rune.Rune;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
  * Item types which Runewords can be placed into.
  * Some Item types such as gloves, belts, boots, etc
@@ -90,6 +98,22 @@ public enum ItemType
     public int getMaxSockets()
     {
         return maxSockets;
+    }
+
+    private static final Map<String, ItemType> fromString = Arrays.stream(values())
+            .collect(Collectors.collectingAndThen(
+                    Collectors.toMap(k -> k.name().toLowerCase(), Function.identity()),
+                    Collections::unmodifiableMap));
+
+    /**
+     * Looks up a Rune from a String.
+     * @param str String to use for the lookup.
+     * @return Rune corresponding to the String.
+     */
+    public static ItemType fromString(final String str)
+    {
+        assert str != null;
+        return fromString.get(str);
     }
 
     /**

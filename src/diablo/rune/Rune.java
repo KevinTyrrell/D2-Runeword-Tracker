@@ -28,6 +28,14 @@ package diablo.rune;
  * Date Created:    03/09/2018
  */
 
+import util.Utilities;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 public enum Rune
 {
     /* Drop Source: https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik */
@@ -111,6 +119,76 @@ public enum Rune
         return rarity;
     }
 
+    /**
+     * Parses a stream of Strings into Runes and their respective quantities.
+     * Strings must either be of the form "{RuneName}{RuneQuantity}" or
+     * "{RuneName} (the later assumes a quantity of one). If the Stream consists
+     * of Amn5, amn4, the map will sum the two into the pair: amn->9.
+     * @param ss String Stream to parse.
+     * @return Map of all of the Runes corresponding to their summed quantities.
+     */
+    public static Map<Rune, Integer> parseRuneQuantities(final Stream<String> ss)
+    {
+        assert ss != null;
+
+        /* Regular expression of non-digit followed by a digit. */
+        final String regexp = "(?<=\\D)(?=\\d)";
+        final int MAX_RUNE_QUANTITY = 99;
+
+        return ss.map(str -> str.split(regexp))
+                .flatMap(sep ->
+                {
+                    final Rune r = Rune.fromString(sep[0]);
+                    if (r == null)
+                    {
+                        System.out.printf("Error: No such Rune of \"%.10s\" exists.\n\n", sep[0]);
+                        return Stream.empty();
+                    }
+
+                    final int q;
+                    if (sep.length > 1)
+                        try
+                        {
+                            q = Integer.parseInt(sep[1]);
+                            if (q < 1 || q > MAX_RUNE_QUANTITY)
+                                throw new NumberFormatException();
+                        }
+                        catch (final NumberFormatException e)
+                        {
+                            System.out.printf("Error: Rune quantity of \"%.10s\" must be between [1, %d].\n\n",
+                                    sep[1], MAX_RUNE_QUANTITY);
+                            return Stream.empty();
+                        }
+                    /* If no Rune quantity is provided, assume 1. */
+                    else q = 1;
+
+                    return Stream.of(Map.entry(r, q));
+                })
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                Integer::sum, () -> new EnumMap<>(Rune.class)),
+                        Collections::unmodifiableMap));
+    }
+
+    private static final Map<String, Rune> fromString = Arrays.stream(Rune.values())
+            .collect(Collectors.collectingAndThen(
+                    Collectors.toMap(k -> k.getName().toLowerCase(), Function.identity()),
+                    Collections::unmodifiableMap));
+
+    /**
+     * Looks up a Rune from a String.
+     * @param str String to use for the lookup.
+     * @return Rune corresponding to the String.
+     */
+    public static Rune fromString(final String str)
+    {
+        assert str != null;
+        return fromString.get(str);
+    }
+
+    /**
+     * @return String representation of the Rune.
+     */
     @Override public String toString()
     {
         return name;

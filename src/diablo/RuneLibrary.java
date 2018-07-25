@@ -30,10 +30,11 @@ package diablo;
 
 import diablo.rune.Rune;
 import diablo.rune.Runeword;
-import util.Utilities;
+import util.Saveable;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,15 +44,17 @@ import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
 public enum RuneLibrary implements Saveable
 {
     INSTANCE;
-    
+
+    /* Runes which the player owns, in sorted order. */
+    // TODO: This can almost certainly be made as an EnumMap.
     private final TreeMap<Rune, Integer> runes;
 
     private static final String FILE_NAME = "RuneLib.ser";
     
     RuneLibrary()
     {
-        TreeMap<Rune, Integer> tempRunes = Utilities.readSerializable(new File(FILE_NAME));
-        runes = tempRunes != null ? tempRunes : new TreeMap<>(Comparator.reverseOrder());
+        final TreeMap<Rune, Integer> t = Saveable.loadSerializable(new File(FILE_NAME));
+        runes = t != null ? t : new TreeMap<>(Comparator.reverseOrder());
     }
 
     /**
@@ -60,40 +63,59 @@ public enum RuneLibrary implements Saveable
      */
     public void add(final Rune r)
     {
-        assert r != null;
-        runes.merge(r, 1, Integer::sum);
+        add(r, 1);
     }
 
     /**
-     * Adds a Rune or Rune(s) to the library.
-     * @param r Rune(s) to add.
+     * Adds a Rune with a specified quantity to the library.
+     * @param r Rune to add.
+     * @param quantity Quantity of the Rune to add.
      */
-    public void add(final Rune... r)
+    public void add(final Rune r, final int quantity)
     {
-        Arrays.stream(r)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)))
-                .forEach((rune, i) -> runes.merge(rune, i, Integer::sum));
+        assert r != null;
+        assert quantity > 0;
+
+        runes.merge(r, quantity, Integer::sum);
+        unsavedChanges = true;
     }
 
     /**
-     * Removes a Rune from the library.
+     * Attempts to remove a Rune from the library.
      * @param r Rune to remove.
+     * @return False if the library has no such rune.
      */
-    public void toss(final Rune r)
+    public boolean toss(final Rune r)
     {
-        assert r != null;
-        runes.computeIfPresent(r, (rune, i) -> i > 1 ? i - 1 : null);
+        return toss(r, 1);
     }
 
     /**
-     * Removes a Rune or Rune(s) from the library.
-     * @param r Rune(s) to remove.
+     * Attempts to remove a Rune with a specified quantity from the library.
+     * @param r Rune to remove.
+     * @param quantity Quantity of that Rune to remove.
+     * @return False if the Rune does not exist or if insufficient quantity.
      */
-    public void toss(final Rune... r)
+    public boolean toss(final Rune r, final int quantity)
     {
-        Arrays.stream(r)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)))
-                .forEach((rune, i) -> runes.computeIfPresent(rune, (rn, h) -> h > i ? h - i : null));
+        assert r != null;
+        assert quantity > 0;
+
+        final AtomicBoolean b = new AtomicBoolean(false);
+
+        runes.compute(r, (rune, integer) ->
+        {
+            if (integer != null && integer >= quantity)
+            {
+                b.set(true);
+                final int diff = integer - quantity;
+                return diff > 0 ? diff : null;
+            }
+
+            return integer;
+        });
+
+        return b.get();
     }
 
     /**
@@ -107,30 +129,29 @@ public enum RuneLibrary implements Saveable
         assert rwProgress != null;
         
         /* Assume all Runes should be discarded. */
-        final Map<Rune, Integer> toToss = new EnumMap<>(runes);
+        final Map<Rune, Integer> toToss = new EnumMap<>(Rune.class);
+        toToss.putAll(runes);
 
-        rwProgress.entrySet().stream()
-                .forEach(rwProgEntry ->
-                {
-                    final double progressLeft = 1.0 - rwProgEntry.getValue();
-                    final Runeword rw = rwProgEntry.getKey();
-                    rw.getRunes().entrySet().stream()
-                            .map(runeNumEntry -> Stream.generate(runeNumEntry::getKey)
-                                    .limit(runeNumEntry.getValue()))
-                            .flatMap(Function.identity())
-                            .filter(toToss::containsKey)
-                            .forEach(r ->
-                            {
-                                final double runeProg = rw.calculateProgress(r);
-                                /* Is this Rune worth at least [CT%] of the remaining needed progress? */
-                                if (runeProg / COMPLETION_THRESHOLD >= progressLeft - runeProg)
-                                    /* Rune is valued towards current goals, keep it. */
-                                    toToss.computeIfPresent(r, (rn, h) -> h > 1 ? h - 1 : null);
-                            });
-                });
+        rwProgress.forEach((rw, value) ->
+        {
+            final double progressLeft = 1.0 - value;
+            rw.getRunes().entrySet().stream()
+                    .map(runeNumEntry -> Stream.generate(runeNumEntry::getKey)
+                            .limit(runeNumEntry.getValue()))
+                    .flatMap(Function.identity())
+                    .filter(toToss::containsKey)
+                    .forEach(r ->
+                    {
+                        final double runeProg = rw.calculateProgress(r);
+                        /* Is this Rune worth at least [CT%] of the remaining needed progress? */
+                        if (runeProg / COMPLETION_THRESHOLD >= progressLeft - runeProg)
+                            /* Rune is valued towards current goals, keep it. */
+                            toToss.computeIfPresent(r, (rn, h) -> h > 1 ? h - 1 : null);
+                    });
+        });
 
         return toToss.entrySet().stream()
-                /* Hel Runes can be used for unsocketing, omit them. */
+                /* Hel Runes can be used for un-socketing, omit them. */
                 .filter(entry -> entry.getKey() != Rune.HEL)
                 /* High Runes should not be considered for tossing. */
                 .filter(entry -> !entry.getKey().isHighRune())
@@ -146,29 +167,32 @@ public enum RuneLibrary implements Saveable
     {
         return Collections.unmodifiableMap(runes);
     }
-    
+
+    private boolean unsavedChanges = false;
+
     /**
      * Saves the object to the storage medium.
      *
      * @return True if the object was saved.
      */
-    @Override public boolean save()
+    @Override
+    public boolean save()
     {
-        try (final FileOutputStream fos = new FileOutputStream(new File(FILE_NAME)))
-        {
-            try (final ObjectOutputStream oos = new ObjectOutputStream(fos))
-            {
-                oos.writeObject(runes);
-                return true;
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        
-        return false;
+        unsavedChanges = !Saveable.saveSerializable(runes, new File(FILE_NAME));
+        return !unsavedChanges;
     }
+
+    /**
+     * Indicates if the Object has changes made since the last save.
+     *
+     * @return True if changes have been made since the last save.
+     */
+    @Override
+    public boolean hasUnsavedChanges()
+    {
+        return unsavedChanges;
+    }
+
 
     @Override public String toString()
     {

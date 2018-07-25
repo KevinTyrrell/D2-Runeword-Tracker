@@ -279,6 +279,22 @@ public enum Runeword
         return level;
     }
 
+    private static final Map<String, Runeword> fromString = Arrays.stream(Runeword.values())
+            .collect(Collectors.collectingAndThen(
+                    Collectors.toMap(k -> k.name().toLowerCase(), Function.identity()),
+                    Collections::unmodifiableMap));
+
+    /**
+     * Looks up a Runeword from a String.
+     * @param str String to use for the lookup.
+     * @return Runeword corresponding to the String.
+     */
+    public static Runeword fromString(final String str)
+    {
+        assert str != null;
+        return fromString.get(str);
+    }
+
     @Override public String toString()
     {
         return "\"" + name + "\" " + word;

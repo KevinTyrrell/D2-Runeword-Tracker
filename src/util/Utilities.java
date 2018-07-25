@@ -32,47 +32,19 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.Time;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public final class Utilities
 {
-    /**
-     * Repeats a String 'n' times.
-     * @param str String to be repeated.
-     * @param times Amount of times for the String to repeat.
-     * @return Repeated String.
-     */
-    public static String repeatString(final String str, final int n)
-    {
-        assert str != null;
-        assert !str.isEmpty();
-        assert n > 0;
-        return new String(new char[n]).replace("\0", str);
-    }
-    
-    /**
-     * Reads a serialized object from the storage medium.
-     * @param f File to read from.
-     * @param <T> Data type of the object.
-     * @return Object read from the file or null if the object could not be read.
-     */
-    public static <T> T readSerializable(final File f)
-    {
-        assert f != null;
-        
-        try (final FileInputStream fis = new FileInputStream(f))
-        {
-            try (final ObjectInputStream ois = new ObjectInputStream(fis))
-            {
-                return (T) ois.readObject();
-            }
-            catch (ClassNotFoundException ignored) { }
-        }
-        catch (IOException ignored) { }
-        
-        return null;
-    }
-
     /**
      * Rounds a number to a specified amount of significant figures.
      * @param d Number to round.
@@ -85,6 +57,82 @@ public final class Utilities
         final BigDecimal big = new BigDecimal(d);
         final MathContext mc = new MathContext(sigFigures);
         return big.round(mc).doubleValue();
+    }
+
+    /**
+     * Parses through a stream of data, filtering out those who don't pass the specified callback function.
+     * The parser callback should return null on objects which do not pass parsing.
+     * @param inputs Stream of data to parse through.
+     * @param parseCallback Callback function which handles the parsing of the data.
+     * @param failureCallback Callback function for when a piece of data is fails parsing.
+     * @param <V> Data type to parse through.
+     * @param <T> Data type to parse to.
+     * @return List of parsed objects.
+     */
+    public static <V,T> List<T> parseValues(final Stream<V> inputs, final Function<V, T> parseCallback,
+                                            final Consumer<V> failureCallback)
+    {
+        assert inputs != null;
+        assert parseCallback != null;
+
+        return inputs
+                .map(str ->
+                {
+                    final T parsed = parseCallback.apply(str);
+                    if (parsed == null && failureCallback != null)
+                        failureCallback.accept(str);
+                    return parsed;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        Collections::unmodifiableList));
+    }
+
+    /**
+     * Parses through a stream of data, filtering out those who don't pass the specified callback function.
+     * The parser callback should return null on objects which do not pass parsing.
+     * @param inputs Stream of data to parse through.
+     * @param parseCallback Callback function which handles the parsing of the data.
+     * @param <V> Data type to parse through.
+     * @param <T> Data type to parse to.
+     * @return List of parsed objects.
+     */
+    public static <V,T> List<T> parseValues(final Stream<V> inputs, final Function<V, T> parseCallback)
+    {
+        return parseValues(inputs, parseCallback, null);
+    }
+
+    /**
+     * Repeats a String a specified number of times.
+     * @param str String to repeat.
+     * @param times Times to repeat the String.
+     * @return Repeated String.
+     */
+    public static String repeatString(final String str, final int times)
+    {
+        assert str != null;
+        assert !str.isEmpty();
+        assert times >= 0;
+        if (times == 0) return "";
+        return IntStream.range(0, times)
+                .mapToObj(i -> str)
+                .collect(Collectors.joining());
+    }
+
+    /**
+     * Repeats a character a specified number of times.
+     * @param ch Character to repeat.
+     * @param times Times to repeat the character.
+     * @return String of the repeated character.
+     */
+    public static String repeatChar(final char ch, final int times)
+    {
+        assert times >= 0;
+        if (times == 0) return "";
+        final char[] arr = new char[times];
+        Arrays.fill(arr, ch);
+        return new String(arr);
     }
 
     /**

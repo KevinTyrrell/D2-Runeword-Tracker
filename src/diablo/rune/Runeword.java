@@ -29,6 +29,7 @@ package diablo.rune;
  */
 
 import console.Paragraph;
+import diablo.Runner;
 import diablo.item.ItemType;
 import diablo.item.ItemTypeContainer;
 
@@ -162,7 +163,10 @@ public enum Runeword
     /* Descriptions of every Runeword. */
     private static final Map<Runeword, Paragraph> descriptions = new EnumMap<>(Runeword.class);
     /* File in which Runeword descriptions are stored. */
-    private static final File RW_DESCRIPTION_FILE = new File("res/Runewords.txt");
+    private static final String RW_DESCRIPTION_PATH = "Runewords.txt";
+
+//    InputStream in = getClass().getResourceAsStream("/file.txt");
+//    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
     static
     {
@@ -180,8 +184,11 @@ public enum Runeword
                 .collect(Collectors.toMap(Runeword::getName, Function.identity()));
         final String regexp = "\\n$";
         final StringBuilder bd = new StringBuilder();
-        try (final FileReader fr = new FileReader(RW_DESCRIPTION_FILE);
-             final BufferedReader br = new BufferedReader(fr))
+
+        final InputStream is = Runeword.class.getClassLoader().getResourceAsStream(RW_DESCRIPTION_PATH);
+        final InputStreamReader isr = new InputStreamReader(is);
+
+        try (final BufferedReader br = new BufferedReader(isr))
         {
             while (br.ready())
                 bd.append(br.readLine()).append("\n");

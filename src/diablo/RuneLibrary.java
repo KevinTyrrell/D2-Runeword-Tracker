@@ -115,7 +115,7 @@ public enum RuneLibrary implements Saveable
             return integer;
         });
 
-        return b.get();
+        return unsavedChanges = b.get();
     }
 
     /**

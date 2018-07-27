@@ -42,20 +42,20 @@ public enum IgnoreLibrary implements Saveable
     /* Singleton instance. */
     INSTANCE;
 
-    /* Runewords which are ignored. */
-    final EnumSet<Runeword> runewords;
     /* Item types which are ignored. */
     final EnumSet<ItemType> types;
+    /* Runewords which are ignored. */
+    final EnumSet<Runeword> runewords;
 
     private final static String FILE_NAME_RUNEWORDS = "IgnoredWords.ser",
             FILE_NAME_TYPES = "IgnoredTypes.ser";
     
     IgnoreLibrary()
     {
-        final EnumSet<Runeword> tr = Saveable.loadSerializable(new File(FILE_NAME_RUNEWORDS));
         final EnumSet<ItemType> ti = Saveable.loadSerializable(new File(FILE_NAME_TYPES));
-        runewords = tr != null ? tr : EnumSet.noneOf(Runeword.class);
+        final EnumSet<Runeword> tr = Saveable.loadSerializable(new File(FILE_NAME_RUNEWORDS));
         types = ti != null ? ti : EnumSet.noneOf(ItemType.class);
+        runewords = tr != null ? tr : EnumSet.noneOf(Runeword.class);
     }
 
     /**

@@ -28,12 +28,9 @@ package diablo.rune;
  * Date Created:    03/09/2018
  */
 
-import util.Utilities;
-
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public enum Rune

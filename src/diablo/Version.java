@@ -47,5 +47,5 @@ public final class Version
     /**
      * Date on which the release was compiled.
      */
-    public static final LocalDate COMPILED_ON = LocalDate.of(2018, 7, 25);
+    public static final LocalDate COMPILED_ON = LocalDate.of(2018, 7, 26);
 }

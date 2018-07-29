@@ -223,9 +223,9 @@ public final class Tracker
 
                 /* Watch only the Runewords the user cares for and that they are in progress towards. */
                 final Set<Runeword> watchedWords = Runeword.RANKINGS.keySet().stream()
-                        /* Ignore Runewords that the user has ignored. */
+                        /* Filter out Runewords that the user has ignored. */
                         .filter(rw -> !ignored.getRunewords().contains(rw))
-                        /* Ignore Runewords whose bases are all ignored. */
+                        /* Filter out Runewords whose bases are all ignored. */
                         .filter(rw -> !ignored.getTypes().containsAll(rw.getTypes()))
                         /* Filter out Runewords which we lack enough progress towards. */
                         .filter(rw ->

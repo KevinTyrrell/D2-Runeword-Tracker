@@ -252,19 +252,20 @@ public enum Runeword
      * A Runeword is 100% complete when all Runes it requires are collected.
      * Runes have weighted rarities, so higher Runes make more of an impact.
      * @param runes Runes the user owns.
-     * @return percentage of completion (between 0.0% and 1.0% inclusive).
+     * @return percentage of completion (between 0.00% and 1.00% inclusive).
      */
     public double calculateProgress(final Map<Rune, Integer> runes)
     {
         assert runes != null;
-        return this.runes.entrySet().stream()
+        return Math.round(this.runes.entrySet().stream()
                 .filter(entry -> runes.containsKey(entry.getKey()))
-                .mapToDouble(entry -> 
+                .mapToDouble(entry ->
                 {
                     final Rune r = entry.getKey();
                     return Math.min(entry.getValue(), runes.get(r)) * calculateProgress(r);
                 })
-                .sum();
+                /* Sum and round to two decimal places. */
+                .sum() * 100.0) / 100.0;
     }
 
     /**
@@ -272,7 +273,7 @@ public enum Runeword
      * A Runeword is 100% complete when all Runes it requires are collected.
      * Runes have weighted rarities, so higher Runes make more of an impact.
      * @param rune Rune the user owns.
-     * @return percentage of completion (between 0.0% and 1.0% inclusive).
+     * @return percentage of completion (between 0% and 1% inclusive).
      */
     public double calculateProgress(final Rune rune)
     {

@@ -34,7 +34,7 @@ public final class Version
 {
     private static final int MAJOR = 2,     /* Non-backwards compatible changes are made. */
         MINOR = 1,                          /* Backwards compatible features implemented. */
-        PATCH = 3;                          /* Backwards compatible bug fixes implemented. */
+        PATCH = 4;                          /* Backwards compatible bug fixes implemented. */
     
     /* Version format for String representations. */
     private static final String FORMAT = "v%d.%d.%d";
@@ -47,5 +47,5 @@ public final class Version
     /**
      * Date on which the release was compiled.
      */
-    public static final LocalDate COMPILED_ON = LocalDate.of(2018, 7, 28);
+    public static final LocalDate COMPILED_ON = LocalDate.of(2018, 8, 1);
 }

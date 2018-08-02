@@ -102,6 +102,7 @@ public final class Tracker
 
                 System.out.print("INPUT:\t");
                 inputs = Arrays.stream(sc.nextLine()
+                        .trim()
                         .replaceAll("^a-zA-Z\\s_", "")
                         .toLowerCase()
                         .split("\\s+"))

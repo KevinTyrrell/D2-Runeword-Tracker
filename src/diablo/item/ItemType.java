@@ -1,32 +1,22 @@
 /*
-Copyright © 2018 Kevin Tyrrell
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+ * Application which tracks Runeword progress in the video game Diablo 2.
+ * Copyright (C) 2018  Kevin Tyrrell
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 package diablo.item;
-
-/*
- * File Name:       ItemType
- * File Author:     Kevin Tyrrell
- * Date Created:    03/11/2018
- */
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,11 +25,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Item types which Runewords can be placed into.
- * Some Item types such as gloves, belts, boots, etc
- * are omitted due to not being able to have sockets.
- * 
- * Note: Orbs can actually have Runewords placed in them.
+ * Defines all possible item types in Diablo 2.
+ *
+ * @since 2.0
  */
 public enum ItemType
 {
@@ -100,6 +88,7 @@ public enum ItemType
 
     private static final Map<String, ItemType> fromString = Arrays.stream(values())
             .collect(Collectors.collectingAndThen(
+                    /* name() throws a 'cannot resolve name' in Intellij 2018, Java 9.0.4, but compiles. */
                     Collectors.toMap(k -> k.name().toLowerCase(), Function.identity()),
                     Collections::unmodifiableMap));
 

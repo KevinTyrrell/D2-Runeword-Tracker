@@ -137,7 +137,7 @@ Indestructible
 Adds 1-50 Lightning Damage
 7% Mana Stolen Per Hit
 50% Chance of Crushing Blow
-(0.5*Clvl)% Deadly StrikeCharges
+(0.5*Clvl)% Deadly Strike
 +1 To Light Radius
 Level 22 Blood Golem (15 Charges) 
 Requirements -20%
@@ -182,35 +182,33 @@ Freezes Target +3
 Requirements -20%
 
 Dragon
-Both
 20% Chance to Cast Level 18 Venom When Struck
 12% Chance To Cast Level 15 Hydra On Striking
 Level 14 Holy Fire Aura When Equipped
 +360 Defense
 +230 Defense Vs. Missile
 +3-5 To All Attributes 
-+(0.375*Clvl) To StrengthCharges
++(0.375*Clvl) To Strength
 +5% To Maximum Lightning Resist 
 Damage Reduced by 7
-Armor
+====== Armor ======
 Increase Maximum Mana 5%
-Shields
+====== Shields ======
 +50 To Mana
 
 Dream
-Both
 10% Chance To Cast Level 15 Confuse When Struck
 Level 15 Holy Shock Aura When Equipped
 +20-30% Faster Hit Recovery
 +30% Enhanced Defense
 +150-220 Defense
 +10 To Vitality
-+(0.625*Clvl) To ManaCharges
++(0.625*Clvl) To Mana
 All Resistances +5-20
 12-25% Better Chance of Getting Magic Items
-Headgear
+====== Helms ======
 Increase Maximum Life 5%
-Shields
+====== Shields ======
 +50 To Life
 
 Duress
@@ -243,12 +241,12 @@ Enigma
 +45% Faster Run/Walk
 +1 To Teleport
 +750-775 Defense (Varies) 
-+(0.75*Clvl) To StrengthCharges
++(0.75*Clvl) To Strength
 Increase Maximum Life 5%
 Damage Reduced By 8%
 +14 Life After Each Kill
 15% Damage Taken Goes To Mana
-(1*Clvl)% Better Chance of Getting Magic ItemsCharges
+(1*Clvl)% Better Chance of Getting Magic Items
 
 Enlightenment
 5% Chance To Cast Level 15 Blaze When Struck
@@ -311,21 +309,20 @@ Prevent Monster Heal
 +10 To Strength
 
 Fortitude
-Both
 20% Chance To Cast Level 15 Chilling Armor when Struck
 +25% Faster Cast Rate
 +300% Enhanced Damage
 +200% Enhanced Defense
-+((8-12)*0.125*Clvl) To LifeCharges
++((8-12)*0.125*Clvl) To Life
 All Resistances +25-30
 12% Damage Taken Goes To Mana
 +1 To Light Radius
-Weapons
+====== Weapons ======
 +9 To Minimum Damage
 +50 To Attack Rating
 20% Deadly Strike
 Hit Causes Monster To Flee 25%
-Armor
+====== Armor ======
 +15 Defense
 Replenish Life +7
 +5% To Maximum Lightning Resist
@@ -359,7 +356,7 @@ Grief
 Damage +340-400
 Ignore Target's Defense
 -25% Target Defense
-+(1.875*Clvl)% Damage To DemonsCharges
++(1.875*Clvl)% Damage To Demons
 Adds 5-30 Fire Damage
 -20-25% To Enemy Poison Resistance
 20% Deadly Strike
@@ -445,7 +442,7 @@ Ignore Target's Defense
 7% Life Stolen Per Hit
 -20% To Enemy Cold Resistance
 20% Deadly Strike
-(3.125*Clvl)% Extra Gold From MonstersCharges
+(3.125*Clvl)% Extra Gold From Monsters
 
 Infinity
 50% Chance To Cast Level 20 Chain Lightning When You Kill An Enemy
@@ -455,7 +452,7 @@ Level 12 Conviction Aura When Equipped
 -(45-55)% To Enemy Lightning Resistance
 40% Chance of Crushing Blow
 Prevent Monster Heal
-+(0.5*Clvl) To VitalityCharges
++(0.5*Clvl) To Vitality
 30% Better Chance of Getting Magic Items
 Level 21 Cyclone Armor (30 Charges)
 
@@ -505,7 +502,7 @@ Ignore Target's Defense
 60-70% Chance of Crushing Blow
 Prevent Monster Heal
 Hit Blinds Target
-(0.5*Clvl)% Chance of Getting Magic ItemsCharges
+(0.5*Clvl)% Chance of Getting Magic Items
 
 Lawbringer
 20% Chance To Cast Level 15 Decrepify On Striking
@@ -525,7 +522,7 @@ Adds 5-30 Fire Damage
 +3 to Inferno (Sorceress Only)
 +3 to Warmth (Sorceress Only)
 +3 to Fire Bolt (Sorceress Only)
-+(2*Clvl) DefenceCharges
++(2*Clvl) Defense
 Cold Resist +33%
 +2 to Mana After Each Kill
 
@@ -572,7 +569,7 @@ Memory
 +3 To Sorceress Skill Levels
 +33% Faster Cast Rate
 +9 To Minimum Damage
--25% Target Defence
+-25% Target Defense
 +3 To Energy Shield (Sorceress Only)
 +2 To Static Field (Sorceress Only)
 +50% Enhanced Defense
@@ -651,7 +648,6 @@ Cold Resist +30%
 Attacker Takes Damage of 14
 
 Phoenix
-Both
 100% Chance To Cast level 40 Blaze When You Level-up
 40% Chance To Cast Level 22 Firestorm On Striking
 Level 10-15 Redemption Aura When Equipped
@@ -659,11 +655,11 @@ Level 10-15 Redemption Aura When Equipped
 -28% To Enemy Fire Resistance
 +350-400 Defense Vs. Missile
 +15-21 Fire Absorb
-Weapons
+====== Weapons ======
 Ignores Target's Defense
 14% Mana Stolen Per Hit
 20% Deadly Strike
-Shields
+====== Shields ======
 +50 To Life
 +5% To Maximum Lightning Resist
 +10% To Maximum Fire Resist
@@ -672,14 +668,14 @@ Pride
 25% Chance To Cast Level 17 Fire Wall When Struck
 Level 16-20 Concentration Aura When Equipped
 260-300% Bonus To Attack Rating
-+(1*Clvl)% Damage To DemonsCharges
++(1*Clvl)% Damage To Demons
 Adds 50-280 Lightning Damage
 20% Deadly Strike
 Hit Blinds Target
 Freezes Target +3
 +10 To Vitality
 Replenish Life +8
-(1.875*Clvl)% Extra Gold From MonstersCharges
+(1.875*Clvl)% Extra Gold From Monsters
 
 Principle
 100% Chance To Cast Level 5 Holy Bolt On Striking
@@ -778,7 +774,6 @@ All Resistances +50
 Level 6 Weaken (18 Charges)
 
 Spirit
-Both
 +2 To All Skills
 +25-35% Faster Cast Rate
 +55% Faster Hit Recovery
@@ -786,12 +781,12 @@ Both
 +22 To Vitality
 +89-112 To Mana
 +3-8 Magic Absorb
-Shields
+====== Shields ======
 Cold Resist +35%
 Lightning Resist +35%
 Poison Resist +35%
 Attacker Takes Damage of 14
-Swords
+====== Swords ======
 Adds 1-50 Lightning Damage
 Adds 3-14 Cold Damage (3 Sec,Normal)
 +75 Poison Damage Over 5 Seconds

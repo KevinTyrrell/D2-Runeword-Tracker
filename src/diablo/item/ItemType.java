@@ -28,8 +28,6 @@ package diablo.item;
  * Date Created:    03/11/2018
  */
 
-import diablo.rune.Rune;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;

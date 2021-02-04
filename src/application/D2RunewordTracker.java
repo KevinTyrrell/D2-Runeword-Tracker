@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021  Kevin Tyrrell
+ * Application which tracks Runeword progress in the video game Diablo 2.
+ * Copyright (C) 2018  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -20,31 +21,53 @@ package application;
 import java.time.LocalDate;
 
 /**
- * Program version information.
- *
- * TODO: Move to Utilities package.
+ * Application entry point.
  *
  * @since 2.0
  */
 public final class D2RunewordTracker
 {
-    private static final int MAJOR = 2,     /* Non-backwards compatible changes are made. */
-        MINOR = 1,                          /* Backwards compatible features implemented. */
-        PATCH = 5,                          /* Backwards compatible bug fixes implemented. */
-        COMPILE_MONTH = 2,                  /* Month of the date in which release was compiled. */
-        COMPILE_DAY = 2,                    /* Day of the date in which release was compiled. */
-        COMPILE_YEAR = 2021;                /* Year of the date in which release was compiled. */
-    
-    /* Version format for String representations. */
-    private static final String FORMAT = "v%d.%d.%d";
+    public static void main(final String[] args)
+    {
+        Tracker.run();
+    }
 
     /**
-     * Diablo 2 Runeword Tracker semantic version number.
+     * Version and compilation information.
      */
-    public static final String NUMBER = String.format(FORMAT, MAJOR, MINOR, PATCH);
+    public static final Version VERSION = Version.INSTANCE;
 
-    /**
-     * Date on which the release was compiled.
-     */
-    public static final LocalDate COMPILED_ON = LocalDate.of(COMPILE_DAY, COMPILE_MONTH, COMPILE_YEAR);
+    private enum Version
+    {
+        INSTANCE;
+
+        private static final int
+                MAJOR = 2,              /* Non-backwards compatible changes are made. */
+                MINOR = 1,              /* Backwards compatible features implemented. */
+                PATCH = 5,              /* Backwards compatible bug fixes implemented. */
+                COMPILE_MONTH = 2,      /* Month of the date in which release was compiled. */
+                COMPILE_DAY = 2,        /* Day of the date in which release was compiled. */
+                COMPILE_YEAR = 2021;    /* Year of the date in which release was compiled. */
+
+        /* Version format for String representations. */
+        private static final String VERSION_FORMAT = "v%d.%d.%d";
+
+        /**
+         * Diablo 2 Runeword Tracker semantic version number.
+         */
+        public final String NUMBER = String.format(VERSION_FORMAT, MAJOR, MINOR, PATCH);
+
+        /**
+         * Date on which the release was compiled.
+         */
+        public final LocalDate COMPILED_ON = LocalDate.of(COMPILE_DAY, COMPILE_MONTH, COMPILE_YEAR);
+
+        /**
+         * @return String representation of the version.
+         */
+        @Override public String toString()
+        {
+            return NUMBER;
+        }
+    }
 }

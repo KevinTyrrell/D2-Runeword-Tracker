@@ -40,6 +40,7 @@ import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
  *
  * TODO: Add sort command.
  * TODO: Class is way too top heavy.
+ * TODO: Consider class rename.
  *
  * @since 2.0
  */

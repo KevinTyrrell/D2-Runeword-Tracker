@@ -37,6 +37,7 @@ import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
  * State machine controlling I/O, collections, and preferences.
  *
  * TODO: Add sort command.
+ * TODO: Class is way too top heavy.
  *
  * @since 2.0
  */
@@ -66,11 +67,11 @@ public final class Tracker
          */
         SPLASH_SCREEN
         {
-            final TextTable splash = new TextTable("Diablo II Runeword Tracker ".concat(Version.NUMBER))
+            final TextTable splash = new TextTable("Diablo II Runeword Tracker ".concat(D2RunewordTracker.NUMBER))
                     .addRow(new Paragraph(Paragraph.Alignment.CENTER, CONSOLE_WIDTH,
                             "Kevin Tyrrell",
                             "https://github.com/KevinTyrrell/D2-Runeword-Tracker",
-                            "Compiled On: ".concat(Version.COMPILED_ON.toString())));
+                            "Compiled On: ".concat(D2RunewordTracker.COMPILED_ON.toString())));
 
             @Override
             public State next()

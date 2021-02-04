@@ -27,7 +27,7 @@ import java.time.LocalDate;
  *
  * @since 2.0
  */
-public final class Version
+public final class D2RunewordTracker
 {
     private static final int MAJOR = 2,     /* Non-backwards compatible changes are made. */
         MINOR = 1,                          /* Backwards compatible features implemented. */

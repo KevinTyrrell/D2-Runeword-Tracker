@@ -54,14 +54,6 @@ public interface Saveable extends Serializable
     AtomicBoolean getUnsavedChanges();
 
     /**
-     * Provides a reference to the serializable member within the class.
-     * A call to `save()` will save this Serializable element.
-     *
-     * @return Serializable member reference.
-     */
-    Serializable getSerializableRef();
-
-    /**
      * Flags the Saveable object as having unsaved changes.
      *
      * On the next `save()` call, the changes will be saved.
@@ -106,7 +98,7 @@ public interface Saveable extends Serializable
         try (final FileOutputStream fos = new FileOutputStream(f);
              final ObjectOutputStream oos = new ObjectOutputStream(fos))
         {
-            oos.writeObject(requireNonNull(getSerializableRef()));
+            oos.writeObject(this);
             unsavedChanges.set(false);
             return true;
         }

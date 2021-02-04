@@ -82,7 +82,7 @@ public interface Saveable<T extends Serializable>
      *  SAVE_DIRECTORY + getFileName() + SAVEABLE_EXTENSION
      *
      * @see Saveable#formatRelativePath(Saveable)
-     * @return
+     * @return filename which will be saved/loaded from the storage medium.
      */
     default String getFileName()
     {

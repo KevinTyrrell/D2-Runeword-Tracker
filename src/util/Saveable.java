@@ -27,9 +27,8 @@ import static java.util.Objects.requireNonNull;
  * Defines an interface for objects which can be saved.
  *
  * @since 2.0
- * @param <T> Base class of the Serializable element.
  */
-public interface Saveable<T extends Serializable>
+public interface Saveable extends Serializable
 {
     /**
      * Directory in which Saveable objects are written to the storage medium.
@@ -40,7 +39,7 @@ public interface Saveable<T extends Serializable>
     /**
      * File extension of the serialized Saveable object(s).
      */
-    String SAVEABLE_EXTENSION = ".ser";
+    String SAVE_EXTENSION = ".ser";
 
     /**
      * Flag provided by the inheriting class which controls
@@ -73,7 +72,7 @@ public interface Saveable<T extends Serializable>
     }
 
     /**
-     * Called during loading or saving to determine filename.
+     * Called during loading or saving to retrieve the filename.
      * By default, filename will be the name of the base class.
      *
      * To change this behavior, override this method.
@@ -81,7 +80,7 @@ public interface Saveable<T extends Serializable>
      * Full path of the file will be dictated as such:
      *  SAVE_DIRECTORY + getFileName() + SAVEABLE_EXTENSION
      *
-     * @see Saveable#formatRelativePath(Saveable)
+     * @see Saveable#formatRelativePath(String)
      * @return filename which will be saved/loaded from the storage medium.
      */
     default String getFileName()
@@ -90,9 +89,10 @@ public interface Saveable<T extends Serializable>
     }
 
     /**
-     * Saves this serializable object to the storage medium.
-     * The object will be saved under filename 'BaseClassName.ser'.
-     * The path of the saved data is dictated by 'SAVE_DIRECTORY'.
+     * Writes the Saveable object to the storage medium.
+     * The save directory and file extension are dictated by the
+     * `SAVE_DIRECTORY` and `SAVE_EXTENSION` constants respectively.
+     * The default filename is the base class name of the Saveable object.
      *
      * @return true if saving to the storage medium was successful.
      */
@@ -101,7 +101,7 @@ public interface Saveable<T extends Serializable>
         final AtomicBoolean unsavedChanges = requireNonNull(getUnsavedChanges());
         if (!unsavedChanges.get()) return true; // No changes to save.
 
-        final File f = new File(formatRelativePath(this));
+        final File f = new File(formatRelativePath(requireNonNull(getFileName())));
 
         try (final FileOutputStream fos = new FileOutputStream(f);
              final ObjectOutputStream oos = new ObjectOutputStream(fos))
@@ -116,16 +116,39 @@ public interface Saveable<T extends Serializable>
     }
 
     /**
-     * Attempts to load the serialized object from the storage medium.
+     * Attempts to load the Saveable object from the storage medium.
      * Returns null if the expected serialized file does not exist,
      * or if an expected exception occurs during file I/O.
      *
-     * @return Serializable object from the storage medium, or null.
+     * For default filenames (uses class name), this method should be used.
+     * If custom filenames are desired, call `load(String)` instead.
+     * In addition, override `getFileName()` to specify the same filename.
+     *
+     * @see Saveable#load(String)
+     * @see Saveable#getFileName()
+     * @see Saveable#save()
+     * @return Saveable object from the storage medium, or null.
      */
     @SuppressWarnings("unchecked")
-    default T load()
+    static <T extends Saveable> T load(final Class<T> cls)
     {
-        final File f = new File(formatRelativePath(this));
+        return load(requireNonNull(cls).getName());
+    }
+
+    /**
+     * Attempts to load the Saveable object from the storage medium.
+     * Returns null if the expected serialized file does not exist,
+     * or if an expected exception occurs during file I/O.
+     *
+     * @see Saveable#load(Class)
+     * @see Saveable#getFileName()
+     * @see Saveable#save()
+     * @return Saveable object from the storage medium, or null.
+     */
+    @SuppressWarnings("unchecked")
+    static <T extends Saveable> T load(final String filename)
+    {
+        final File f = new File(formatRelativePath(requireNonNull(filename)));
 
         try (final FileInputStream fis = new FileInputStream(f);
              final ObjectInputStream ois = new ObjectInputStream(fis))
@@ -142,9 +165,9 @@ public interface Saveable<T extends Serializable>
     }
 
     /* Formats the relative path for the file which is being saved or loaded. */
-    private static <T extends Serializable> String formatRelativePath(final Saveable<T> o)
+    private static String formatRelativePath(final String filename)
     {
-        assert o != null;
-        return String.format("%s%s%s", SAVE_DIRECTORY, requireNonNull(o.getFileName()), SAVEABLE_EXTENSION);
+        assert filename != null;
+        return String.format("%s%s%s", SAVE_DIRECTORY, filename, SAVE_EXTENSION);
     }
 }

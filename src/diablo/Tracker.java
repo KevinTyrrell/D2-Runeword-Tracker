@@ -36,6 +36,8 @@ import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
 /**
  * State machine controlling I/O, collections, and preferences.
  *
+ * TODO: Add sort command.
+ *
  * @since 2.0
  */
 public final class Tracker
@@ -127,7 +129,6 @@ public final class Tracker
             {
                 Rune.parseRuneQuantities(inputs.stream())
                         .forEach(runes::add);
-
                 if (!runes.hasUnsavedChanges())
                     return DISPLAYING_RUNES;
                 if (!runes.save())

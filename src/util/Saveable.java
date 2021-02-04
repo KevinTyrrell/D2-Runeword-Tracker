@@ -19,72 +19,132 @@
 package util;
 
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Defines an interface for objects which can be saved.
  *
- * TODO: Determine if more saving logic can be included into this class.
- *
  * @since 2.0
+ * @param <T> Base class of the Serializable element.
  */
-public interface Saveable
+public interface Saveable<T extends Serializable>
 {
     /**
-     * Saves the object to the storage medium.
-     * @return True if the object was saved.
+     * Directory in which Saveable objects are written to the storage medium.
+     * The absolute path is based off of the program's working directory.
      */
-    boolean save();
+    String SAVE_DIRECTORY = "saves/";
 
     /**
-     * Indicates if the Object has changes made since the last save.
-     * @return True if changes have been made since the last save.
+     * File extension of the serialized Saveable object(s).
      */
-    boolean hasUnsavedChanges();
-
-    /* Message format for errors when a Saveable fails to save. */
-    String SAVE_FAILED_FMT = "Failed to save %s to the storage medium.\n\n";
+    String SAVEABLE_EXTENSION = ".ser";
 
     /**
-     * Saves the Serializable object to the storage medium.
-     * @param s Serializable object to save.
-     * @param f File to save the object inside of.
-     * @return True if saving was successful.
+     * Flag provided by the inheriting class which controls
+     * whether or not the object has unsaved changes present.
+     * The flag itself is completely managed by Saveable.
+     *
+     * This method should only be called by the Saveable class.
+     * For flagging unsaved changes, call `flagUnsavedChanges()`.
+     *
+     * @return AtomicBoolean instance variable of the inheriting class.
      */
-    static boolean saveSerializable(final Serializable s, final File f)
+    AtomicBoolean getUnsavedChanges();
+
+    /**
+     * Provides a reference to the serializable member within the class.
+     * A call to `save()` will save this Serializable element.
+     *
+     * @return Serializable member reference.
+     */
+    Serializable getSerializableRef();
+
+    /**
+     * Flags the Saveable object as having unsaved changes.
+     *
+     * On the next `save()` call, the changes will be saved.
+     */
+    default void flagUnsavedChanges()
     {
-        assert s != null;
-        assert f != null;
+        requireNonNull(getUnsavedChanges()).set(true);
+    }
+
+    /**
+     * Called during loading or saving to determine filename.
+     * By default, filename will be the name of the base class.
+     *
+     * To change this behavior, override this method.
+     * Returned filename should not contain a file extension.
+     * Full path of the file will be dictated as such:
+     *  SAVE_DIRECTORY + getFileName() + SAVEABLE_EXTENSION
+     *
+     * @see Saveable#formatRelativePath(Saveable)
+     * @return
+     */
+    default String getFileName()
+    {
+        return getClass().getName();
+    }
+
+    /**
+     * Saves this serializable object to the storage medium.
+     * The object will be saved under filename 'BaseClassName.ser'.
+     * The path of the saved data is dictated by 'SAVE_DIRECTORY'.
+     *
+     * @return true if saving to the storage medium was successful.
+     */
+    default boolean save()
+    {
+        final AtomicBoolean unsavedChanges = requireNonNull(getUnsavedChanges());
+        if (!unsavedChanges.get()) return true; // No changes to save.
+
+        final File f = new File(formatRelativePath(this));
 
         try (final FileOutputStream fos = new FileOutputStream(f);
              final ObjectOutputStream oos = new ObjectOutputStream(fos))
         {
-            oos.writeObject(s);
+            oos.writeObject(requireNonNull(getSerializableRef()));
+            unsavedChanges.set(false);
             return true;
         }
-        catch (final IOException ignored) { }
+        catch (final IOException e) { e.printStackTrace(); }
 
         return false;
     }
 
     /**
-     * Loads a Serializable object from the storage medium.
-     * @param f File to load Object from.
-     * @param <T> Generic type of the object.
-     * @return Serializable object, or null if loading failed.
+     * Attempts to load the serialized object from the storage medium.
+     * Returns null if the expected serialized file does not exist,
+     * or if an expected exception occurs during file I/O.
+     *
+     * @return Serializable object from the storage medium, or null.
      */
     @SuppressWarnings("unchecked")
-    static <T> T loadSerializable(final File f)
+    default T load()
     {
-        assert f != null;
+        final File f = new File(formatRelativePath(this));
 
         try (final FileInputStream fis = new FileInputStream(f);
              final ObjectInputStream ois = new ObjectInputStream(fis))
         {
-
             return (T) ois.readObject();
         }
-        catch (IOException | ClassNotFoundException ignored) { }
+        catch (final FileNotFoundException ignored) { }
+        catch (final IOException | ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
 
         return null;
+    }
+
+    /* Formats the relative path for the file which is being saved or loaded. */
+    private static <T extends Serializable> String formatRelativePath(final Saveable<T> o)
+    {
+        assert o != null;
+        return String.format("%s%s%s", SAVE_DIRECTORY, requireNonNull(o.getFileName()), SAVEABLE_EXTENSION);
     }
 }

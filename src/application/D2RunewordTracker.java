@@ -1,6 +1,5 @@
 /*
- * Application which tracks Runeword progress in the video game Diablo 2.
- * Copyright (C) 2018  Kevin Tyrrell
+ * Copyright (C) 2021  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package diablo;
+package application;
 
 import java.time.LocalDate;
 

@@ -40,6 +40,10 @@ public enum RuneLibrary implements Saveable
 {
     INSTANCE;
 
+    /* Set of all collected runes, in order of rarity. */
+    final Set<Rune> runeSet = EnumSet.noneOf(Rune.class);
+    final int[] runeCount = new int[];
+
     /* Runes which the player owns, in sorted order. */
     // TODO: This can almost certainly be made as an EnumMap.
     private final TreeMap<Rune, Integer> runes;
@@ -163,7 +167,14 @@ public enum RuneLibrary implements Saveable
         return Collections.unmodifiableMap(runes);
     }
 
-    private final AtomicBoolean unsavedChanges = new AtomicBoolean();
+    @Override public String toString()
+    {
+        return runes.entrySet().stream()
+                .map(rune -> rune.getKey().getName() + "(x" + rune.getValue() + ')')
+                .collect(Collectors.joining(", "));
+    }
+
+    final AtomicBoolean unsavedChanges = new AtomicBoolean();
 
     /**
      * Flag provided by the inheriting class which controls
@@ -179,48 +190,4 @@ public enum RuneLibrary implements Saveable
     {
         return unsavedChanges;
     }
-
-    /**
-     * Provides a reference to the serializable member within the class.
-     * A call to `save()` will save this Serializable element.
-     *
-     * @return Serializable member reference.
-     */
-    @Override public Serializable getSerializableRef()
-    {
-        return null;
-    }
-
-    /**
-     * Saves the object to the storage medium.
-     *
-     * @return True if the object was saved.
-     */
-    @Override
-    public boolean save()
-    {
-        unsavedChanges = !Saveable.saveSerializable(runes, new File(FILE_NAME));
-        return !unsavedChanges;
-    }
-
-    /**
-     * Indicates if the Object has changes made since the last save.
-     *
-     * @return True if changes have been made since the last save.
-     */
-    @Override
-    public boolean hasUnsavedChanges()
-    {
-        return unsavedChanges;
-    }
-
-
-    @Override public String toString()
-    {
-        return runes.entrySet().stream()
-                .map(rune -> rune.getKey().getName() + "(x" + rune.getValue() + ')')
-                .collect(Collectors.joining(", "));
-    }
-
-
 }

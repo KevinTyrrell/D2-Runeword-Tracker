@@ -18,6 +18,8 @@
 
 package diablo.rune;
 
+import util.EnumExtendable;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,7 +30,7 @@ import java.util.stream.Stream;
  *
  * @since 2.0
  */
-public enum Rune
+public enum Rune implements EnumExtendable
 {
     /* Drop Source: https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik */
     EL("El", 215493),

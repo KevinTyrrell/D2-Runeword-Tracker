@@ -21,6 +21,7 @@ package diablo.rune;
 import console.Paragraph;
 import diablo.item.ItemType;
 import diablo.item.ItemTypeContainer;
+import util.EnumExtendable;
 
 import java.io.*;
 import java.util.*;
@@ -44,7 +45,7 @@ import static diablo.rune.Rune.LEM;
  *
  * @since 2.0
  */
-public enum Runeword
+public enum Runeword implements EnumExtendable
 {
     /* Original Runewords */
     ANCIENTS_PLEDGE("Ancient's Pledge", 21, ItemTypeContainer.SHIELD::getValues, RAL, ORT, TAL),
@@ -354,6 +355,14 @@ public enum Runeword
     @Override public String toString()
     {
         return "\"" + name + "\" " + word;
+    }
+
+    /**
+     * @return counted number of elements of the Countable.
+     */
+    @Override public int count()
+    {
+        return TREACHERY.ordinal();
     }
 
     public static class Comparator implements java.util.Comparator<Runeword>

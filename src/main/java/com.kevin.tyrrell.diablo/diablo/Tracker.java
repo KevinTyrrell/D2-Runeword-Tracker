@@ -15,12 +15,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevin.tyrrell.diablo.application;
+package com.kevin.tyrrell.diablo.diablo;
 
+import com.kevin.tyrrell.diablo.D2RunewordTracker;
 import com.kevin.tyrrell.diablo.console.Paragraph;
 import com.kevin.tyrrell.diablo.console.TextTable;
-import com.kevin.tyrrell.diablo.diablo.IgnoreLibrary;
-import com.kevin.tyrrell.diablo.diablo.RuneLibrary;
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
 import com.kevin.tyrrell.diablo.diablo.rune.Rune;
 import com.kevin.tyrrell.diablo.diablo.rune.Runeword;

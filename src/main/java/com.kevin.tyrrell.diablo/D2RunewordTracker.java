@@ -16,7 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevin.tyrrell.diablo.application;
+package com.kevin.tyrrell.diablo;
+
+import com.kevin.tyrrell.diablo.diablo.Tracker;
 
 import java.time.LocalDate;
 

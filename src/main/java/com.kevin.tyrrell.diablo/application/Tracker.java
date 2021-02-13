@@ -15,25 +15,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package application;
+package com.kevin.tyrrell.diablo.application;
 
-import application.D2RunewordTracker;
-import console.Paragraph;
-import console.TextTable;
-import diablo.IgnoreLibrary;
-import diablo.RuneLibrary;
-import diablo.item.ItemType;
-import diablo.rune.Rune;
-import diablo.rune.Runeword;
-import util.Saveable;
-import util.Utilities;
+import com.kevin.tyrrell.diablo.console.Paragraph;
+import com.kevin.tyrrell.diablo.console.TextTable;
+import com.kevin.tyrrell.diablo.diablo.IgnoreLibrary;
+import com.kevin.tyrrell.diablo.diablo.RuneLibrary;
+import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.rune.Rune;
+import com.kevin.tyrrell.diablo.diablo.rune.Runeword;
+import com.kevin.tyrrell.diablo.util.Saveable;
+import com.kevin.tyrrell.diablo.util.Utilities;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
+import static com.kevin.tyrrell.diablo.diablo.rune.Runeword.COMPLETION_THRESHOLD;
 
 /**
  * State machine controlling I/O, collections, and preferences.

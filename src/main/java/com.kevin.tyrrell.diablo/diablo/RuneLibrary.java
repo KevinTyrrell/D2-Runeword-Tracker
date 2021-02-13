@@ -16,11 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package diablo;
+package com.kevin.tyrrell.diablo.diablo;
 
-import diablo.rune.Rune;
-import diablo.rune.Runeword;
-import util.Saveable;
+import com.kevin.tyrrell.diablo.diablo.rune.Rune;
+import com.kevin.tyrrell.diablo.diablo.rune.Runeword;
+import com.kevin.tyrrell.diablo.util.Saveable;
 
 import java.io.*;
 import java.util.*;
@@ -29,7 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static diablo.rune.Runeword.COMPLETION_THRESHOLD;
+import static com.kevin.tyrrell.diablo.diablo.rune.Runeword.COMPLETION_THRESHOLD;
 
 /**
  * Singleton collection handling Runes.

@@ -16,9 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package diablo.rune;
+package com.kevin.tyrrell.diablo.diablo.rune;
 
-import util.EnumExtendable;
+import com.kevin.tyrrell.diablo.util.EnumExtendable;
 
 import java.util.*;
 import java.util.function.Function;

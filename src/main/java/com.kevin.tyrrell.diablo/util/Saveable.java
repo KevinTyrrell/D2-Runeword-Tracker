@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package util;
+package com.kevin.tyrrell.diablo.util;
 
 import java.io.*;
 import java.util.concurrent.atomic.AtomicBoolean;

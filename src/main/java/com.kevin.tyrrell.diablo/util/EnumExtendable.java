@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package util;
+package com.kevin.tyrrell.diablo.util;
 
 import java.util.*;
 import java.util.function.Function;
@@ -191,6 +191,7 @@ public interface EnumExtendable<T extends Enum<?>>
         return toReverseMap(requireNonNull(values), Enum::toString);
     }
 
+    /* Helper function for #createStringMap(). */
     private static <T extends Enum<T>> Map<String, T> toReverseMap(final List<T> values,
                                                                    final Function<T, String> toStringCb)
     {

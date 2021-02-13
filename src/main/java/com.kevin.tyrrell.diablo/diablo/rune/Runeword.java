@@ -16,12 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package diablo.rune;
+package com.kevin.tyrrell.diablo.diablo.rune;
 
-import console.Paragraph;
-import diablo.item.ItemType;
-import diablo.item.ItemTypeContainer;
-import util.EnumExtendable;
+import com.kevin.tyrrell.diablo.console.Paragraph;
+import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.item.ItemTypeContainer;
+import com.kevin.tyrrell.diablo.util.EnumExtendable;
 
 import java.io.*;
 import java.util.*;
@@ -33,10 +33,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static diablo.item.ItemType.*;
-import static diablo.item.ItemType.BODY_ARMOR;
-import static diablo.rune.Rune.*;
-import static diablo.rune.Rune.LEM;
+import static com.kevin.tyrrell.diablo.diablo.item.ItemType.*;
+import static com.kevin.tyrrell.diablo.diablo.item.ItemType.BODY_ARMOR;
+import static com.kevin.tyrrell.diablo.diablo.rune.Rune.*;
+import static com.kevin.tyrrell.diablo.diablo.rune.Rune.LEM;
 
 /**
  * Defines all possible Runewords in Diablo 2 as of patch 1.11.
@@ -355,14 +355,6 @@ public enum Runeword implements EnumExtendable
     @Override public String toString()
     {
         return "\"" + name + "\" " + word;
-    }
-
-    /**
-     * @return counted number of elements of the Countable.
-     */
-    @Override public int count()
-    {
-        return TREACHERY.ordinal();
     }
 
     public static class Comparator implements java.util.Comparator<Runeword>

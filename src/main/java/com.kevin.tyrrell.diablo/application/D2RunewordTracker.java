@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package application;
+package com.kevin.tyrrell.diablo.application;
 
 import java.time.LocalDate;
 

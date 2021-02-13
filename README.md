@@ -1,6 +1,6 @@
 ## Diablo 2 Runeword Tracker
 
-Console application which helps Diablo 2: Lord of Destruction players visualize what Runeword(s) they can create. As the user collects Runes in-game and inputs them into the program, D2 Runeword Tracker will output an organized table of possible Runeword candidates that either can be made or are on-their-way to being completed. A weighted sum algorithm which takes into account documented Rune drop statistics is used to calculate incredibly accurate estimates of how close the player is to assembling all of the Runes needed for a given Runeword.
+Console com.kevin.tyrrell.diablo.application which helps Diablo 2: Lord of Destruction players visualize what Runeword(s) they can create. As the user collects Runes in-game and inputs them into the program, D2 Runeword Tracker will output an organized table of possible Runeword candidates that either can be made or are on-their-way to being completed. A weighted sum algorithm which takes into account documented Rune drop statistics is used to calculate incredibly accurate estimates of how close the player is to assembling all of the Runes needed for a given Runeword.
 
 D2 Runeword Tracker will automatically hide Runewords which it deems the player is nowhere near completing. In addition the user can also request the program hides specific Runewords or Runewords for a particular Item slot. The tracker will indicate when certain Runes are no longer beneficial to you and should be thrown out. Simply collect Runes in-game, enter them into the tracker, and let the program help plan your character.
 
@@ -20,11 +20,11 @@ Visit the **[Releases](https://github.com/KevinTyrrell/D2-Runeword-Tracker/relea
 
 ##### Windows
 
-Either double click the `D2-Runeword-Tracker.bat` file or open up a console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
+Either double click the `D2-Runeword-Tracker.bat` file or open up a com.kevin.tyrrell.diablo.console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
 
 ##### Linux / Mac
 
-Open a console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
+Open a com.kevin.tyrrell.diablo.console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
 
 ----
 Save files for Diablo 2 Runeword Tracker will be created in the directory the `jar` is located.

@@ -16,11 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package diablo;
+package com.kevin.tyrrell.diablo.diablo;
 
-import diablo.item.ItemType;
-import diablo.rune.Runeword;
-import util.Saveable;
+import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.rune.Runeword;
+import com.kevin.tyrrell.diablo.util.Saveable;
 
 import java.io.*;
 import java.util.Collections;

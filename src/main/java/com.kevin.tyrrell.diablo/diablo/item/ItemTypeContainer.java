@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package diablo.item;
+package com.kevin.tyrrell.diablo.diablo.item;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -20,17 +20,15 @@ package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.util.EnumExtendable;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Defines all 26 Runes in Diabo 2, along with related drop rates.
  *
  * @since 2.0
  */
-public enum Rune implements EnumExtendable
+public enum Rune implements EnumExtendable<Rune>
 {
     /* Drop Source: https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik */
     EL("El", 215493),
@@ -67,36 +65,52 @@ public enum Rune implements EnumExtendable
     CHAM("Cham", 42),
     ZOD("Zod", 12);
 
-    /* Name of the Rune. */
+    /* Name of the rune. */
     private final String name;
-    /* Rarity of the Rune from (0, ∞). The higher the value, the more rare the Rune is. */
+    /* Chance for the Rune to drop out of a sample size of 1,000,000. */
     private final double rarity;
-    
-    /* Threshold of what is considered to be a High Rune [Mal, Zod]. */
-    public static final Rune HIGH_RUNE_THRESH = MAL;
-    /* Each Rune's drop value is out of 1,000,000M total Rune drops. */
+
+    /* Number of drops in the sample size. @see: Rune#getRarity() */
     private static final int DROP_SAMPLE_SIZE = 1000000;
+
+    /**
+     * Extension of the enum, adding additional functionality.
+     */
+    public static final EnumExtendable<Rune> ext = new EnumExtendable<>()
+    {
+        private final List<Rune> values = EnumExtendable.createEnumList(Rune.values());
+        private final Map<String, Rune> stringMap = EnumExtendable.createStringMap(
+                values, rune -> rune.toString().toLowerCase());
+
+        @Override public List<Rune> values() { return values; }
+        @Override public Map<String, Rune> stringMap() { return stringMap; }
+    };
     
     /**
-     * @param name - Name of the Rune.
-     * @param dropValue - Number of times dropped per one million Rune drops.
+     * @param name Name of the rune.
+     * @param dropValue Number of drop occurrences in the sample size.
      */
     Rune(final String name, final int dropValue)
     {
         assert name != null;
         assert dropValue > 0;
         this.name = name;
-        rarity = 1 / ((double)dropValue / DROP_SAMPLE_SIZE);
+        rarity = (double)dropValue / DROP_SAMPLE_SIZE;
     }
 
     /**
-     * @return True if this Rune is considered to be a High Rune.
+     * Queries the tier of the rune.
      *
-     * TODO: Provide interface for high, mid, or low runes (e.g. 0=high,1=mid,2=low).
+     * The 33 runes are divided into three tiers: low, mid, high.
+     * Low: El -> Amn
+     * Mid: Sol -> Um
+     * High: Mal -> Zod
+     *
+     * @return -1 for low, 0 for mid, 1 for high.
      */
-    public boolean isHighRune()
+    public int getTier()
     {
-        return compareTo(HIGH_RUNE_THRESH) >= 0;
+        return (int)((double)ordinal() / ext.size() * 3) - 1;
     }
 
     /**
@@ -108,78 +122,15 @@ public enum Rune implements EnumExtendable
     }
 
     /**
-     * @return Percent chance for the Rune to drop (from [0, 1]).
+     * Retrieves the chance for the Rune to drop, on average.
+     *
+     * Sample size: 1,000,000 rune drops.
+     * Rune drop chances are based off of data provided by 1.10 user Urlik.
+     * Source: https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik
      */
     public double getRarity()
     {
         return rarity;
-    }
-
-    /**
-     * Parses a stream of Strings into Runes and their respective quantities.
-     * Strings must either be of the form "{RuneName}{RuneQuantity}" or
-     * "{RuneName} (the later assumes a quantity of one). If the Stream consists
-     * of Amn5, amn4, the map will sum the two into the pair: amn->9.
-     * @param ss String Stream to parse.
-     * @return Map of all of the Runes corresponding to their summed quantities.
-     */
-    public static Map<Rune, Integer> parseRuneQuantities(final Stream<String> ss)
-    {
-        assert ss != null;
-
-        /* Regular expression of non-digit followed by a digit. */
-        final String regexp = "(?<=\\D)(?=\\d)";
-        final int MAX_RUNE_QUANTITY = 99;
-
-        return ss.map(str -> str.split(regexp))
-                .flatMap(sep ->
-                {
-                    final Rune r = Rune.fromString(sep[0]);
-                    if (r == null)
-                    {
-                        System.out.printf("Error: No such Rune of \"%.10s\" exists.\n\n", sep[0]);
-                        return Stream.empty();
-                    }
-
-                    final int q;
-                    if (sep.length > 1)
-                        try
-                        {
-                            q = Integer.parseInt(sep[1]);
-                            if (q < 1 || q > MAX_RUNE_QUANTITY)
-                                throw new NumberFormatException();
-                        }
-                        catch (final NumberFormatException e)
-                        {
-                            System.out.printf("Error: Rune quantity of \"%.10s\" must be between [1, %d].\n\n",
-                                    sep[1], MAX_RUNE_QUANTITY);
-                            return Stream.empty();
-                        }
-                    /* If no Rune quantity is provided, assume 1. */
-                    else q = 1;
-
-                    return Stream.of(Map.entry(r, q));
-                })
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                                Integer::sum, () -> new EnumMap<>(Rune.class)),
-                        Collections::unmodifiableMap));
-    }
-
-    private static final Map<String, Rune> fromString = Arrays.stream(Rune.values())
-            .collect(Collectors.collectingAndThen(
-                    Collectors.toMap(k -> k.getName().toLowerCase(), Function.identity()),
-                    Collections::unmodifiableMap));
-
-    /**
-     * Looks up a Rune from a String.
-     * @param str String to use for the lookup.
-     * @return Rune corresponding to the String.
-     */
-    public static Rune fromString(final String str)
-    {
-        assert str != null;
-        return fromString.get(str);
     }
 
     /**

@@ -28,6 +28,7 @@ import static com.kevin.tyrrell.diablo.util.Utilities.repeatChar;
  *
  * TODO: Assess whether Paragraph should remain immutable.
  * TODO: Implement justified or distributed flags.
+ * TODO: Allow for list<String> constructor.
  *
  * @since 2.0
  */
@@ -71,8 +72,7 @@ public final class Paragraph
             /* The line cannot overflow the specified width limit. */
             if (word.length() + charSum + line.size() > maxWidth)
             {
-                lines.add(line.stream()
-                        .collect(Collectors.joining(" ")));
+                lines.add(String.join(" ", line));
                 line.clear();
                 charSum = 0;
             }
@@ -81,8 +81,7 @@ public final class Paragraph
             charSum += word.length();
         }
 
-        lines.add(line.stream()
-                .collect(Collectors.joining(" ")));
+        lines.add(String.join(" ", line));
 
         return new Paragraph(alignment, lines.toArray(new String[0]));
     }

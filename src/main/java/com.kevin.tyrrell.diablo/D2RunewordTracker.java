@@ -19,6 +19,8 @@
 package com.kevin.tyrrell.diablo;
 
 import com.kevin.tyrrell.diablo.diablo.Tracker;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.time.LocalDate;
 
@@ -44,18 +46,18 @@ public final class D2RunewordTracker
         INSTANCE;
 
         private static final int
-                MAJOR = 2,              /* Non-backwards compatible changes are made. */
-                MINOR = 1,              /* Backwards compatible features implemented. */
-                PATCH = 5,              /* Backwards compatible bug fixes implemented. */
+                MAJOR = 3,              /* Non-backwards compatible changes are made. */
+                MINOR = 0,              /* Backwards compatible features implemented. */
+                PATCH = 0,              /* Backwards compatible bug fixes implemented. */
                 COMPILE_MONTH = 2,      /* Month of the date in which release was compiled. */
-                COMPILE_DAY = 2,        /* Day of the date in which release was compiled. */
+                COMPILE_DAY = 15,       /* Day of the date in which release was compiled. */
                 COMPILE_YEAR = 2021;    /* Year of the date in which release was compiled. */
 
         /* Version format for String representations. */
         private static final String VERSION_FORMAT = "v%d.%d.%d";
 
         /**
-         * Diablo 2 Runeword Tracker semantic version number.
+         * Semantic version number.
          */
         public final String NUMBER = String.format(VERSION_FORMAT, MAJOR, MINOR, PATCH);
 

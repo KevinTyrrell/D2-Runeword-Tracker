@@ -39,6 +39,8 @@ import static com.kevin.tyrrell.diablo.diablo.rune.Runeword.COMPLETION_THRESHOLD
  * TODO: Add sort command.
  * TODO: Class is way too top heavy.
  * TODO: Consider class rename.
+ * TODO: Clear the console after each command.
+ * TODO: Add WATCHED BASES (e.g. POLEARM: (0, 2, 3 OS) ARMOR: (0, 4 OS))
  *
  * @since 2.0
  */

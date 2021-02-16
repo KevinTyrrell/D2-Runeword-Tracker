@@ -30,7 +30,6 @@ import java.util.Map;
  */
 public enum Rune
 {
-    /* Drop Source: https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik */
     EL("El", 215493),
     ELD("Eld", 143662),
     TIR("Tir", 119718),

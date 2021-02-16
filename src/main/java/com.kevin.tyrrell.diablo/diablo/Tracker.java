@@ -41,6 +41,7 @@ import static com.kevin.tyrrell.diablo.diablo.rune.Runeword.COMPLETION_THRESHOLD
  * TODO: Consider class rename.
  * TODO: Clear the console after each command.
  * TODO: Add WATCHED BASES (e.g. POLEARM: (0, 2, 3 OS) ARMOR: (0, 4 OS))
+ * TODO: Scanner owner should be in the console package.
  *
  * @since 2.0
  */

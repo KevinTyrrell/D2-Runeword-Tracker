@@ -52,7 +52,7 @@ public abstract class CachedValue<T> implements Serializable
     {
         if (invalidated)
         {
-            value = recalculate();
+            value = recalculate(value);
             invalidated = false;
         }
 

@@ -42,6 +42,8 @@ import static com.kevin.tyrrell.diablo.diablo.rune.Runeword.COMPLETION_THRESHOLD
  * TODO: Clear the console after each command.
  * TODO: Add WATCHED BASES (e.g. POLEARM: (0, 2, 3 OS) ARMOR: (0, 4 OS))
  * TODO: Scanner owner should be in the console package.
+ * TODO: Replace IgnoreLibrary with preferences class.
+ * TODO: Add options for customizing what runes can be tossed.
  *
  * @since 2.0
  */

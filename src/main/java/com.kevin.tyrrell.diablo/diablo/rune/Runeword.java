@@ -35,84 +35,28 @@ import java.util.stream.Stream;
 import static com.kevin.tyrrell.diablo.diablo.item.ItemType.BODY_ARMOR;
 
 /**
- * Defines all possible Runewords in Diablo 2 as of patch 1.11.
+ * Defines a Runeword which is a specific arrangement of various Runes.
  *
  * @since 2.0
  */
-public enum Runeword implements EnumExtendable
+public class Runeword
 {
-
     /* Name of the Runeword. */
     private final String name;
-    /* Word which activates the Runeword. */
-    private final String word;
-    /* Runes which the Runeword requires, in order. */
-    private final Map<Rune, Integer> runes;
     /* Item types in which this Runeword can go into. */
     private final Set<ItemType> types;
     /* Required level for the Runeword. */
     private final int level;
+
+    // Cache sockets
+    /* Word which activates the Runeword. */
+    private final String word; // TODO: Cache this
+    /* Runes which the Runeword requires, in order. */
+    private final Map<Rune, Integer> runes;
     /* Summed rarity of all of the Runes. */
-    private final double rarity;
+    private final double rarity; // TODO: Cache this
 
-    /* Threshold of when a Runeword should be tracked. */
-    public static final float COMPLETION_THRESHOLD = 0.25f;
-    /* Read-only map sorted by most rare Runeword -> most common. */
-    public static final Map<Runeword, Integer> RANKINGS;
 
-    /* Descriptions of every Runeword. */
-    /* TODO: Only generate paragraphs when they are needed. */
-    private static final Map<Runeword, Paragraph> descriptions = new EnumMap<>(Runeword.class);
-
-    static
-    {
-        /* Rank every Runeword. The most rare Runeword is #1, followed by #2, etc. */
-        final AtomicInteger rankCounter = new AtomicInteger();        
-        RANKINGS = Arrays.stream(Runeword.values())
-                .sorted(new Runeword.Comparator().reversed())
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(Function.identity(), value -> rankCounter.incrementAndGet(), 
-                                (a, b) -> a, LinkedHashMap::new), 
-                        Collections::unmodifiableMap));
-
-        // TODO: Clean this up and put it in a better spot.
-        final Map<String, Runeword> t = Arrays.stream(values())
-                .collect(Collectors.toMap(Runeword::getName, Function.identity()));
-        final String regexp = "\\n$";
-        final StringBuilder bd = new StringBuilder();
-
-        final InputStream is = Runeword.class.getClassLoader().getResourceAsStream(RW_DESCRIPTION_PATH);
-        final InputStreamReader isr = new InputStreamReader(is);
-
-        try (final BufferedReader br = new BufferedReader(isr))
-        {
-            while (br.ready())
-                bd.append(br.readLine()).append("\n");
-            final String doc = bd.toString();
-            bd.setLength(0);
-
-            final Pattern p = Pattern.compile("(.+?)\\n((.|\\n)+?)\\n\\n", Pattern.DOTALL);
-            final Matcher m = p.matcher(doc);
-
-            while (m.find())
-            {
-                assert m.groupCount() >= 3;
-                final String name = m.group(1);
-                final String description = m.group(2);
-                final Runeword rw = t.get(name);
-                final Paragraph par = new Paragraph(Paragraph.Alignment.CENTER,
-                        Stream.concat(
-                                Stream.of(rw.getName() + '(' + rw.getLevel() + ')'),
-                                Arrays.stream(description.split("\n")))
-                        .toArray(String[]::new));
-                descriptions.put(rw, par);
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
 
     Runeword(final String name, final int level, final Supplier<Set<ItemType>> types, final Rune... runes)
     {

@@ -18,7 +18,9 @@
 
 package com.kevin.tyrrell.diablo.util;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,58 +31,59 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-public interface EnumExtendable<T extends Enum<?>>
+public class EnumExtendable<T extends Enum<?>>
 {
-    /**
-     * Read-only list of all values in the enum.
-     *
-     * The method should only be implemented by returning a
-     * private class member List<T> created by `createEnumList`.
-     *
-     * @see EnumExtendable#createEnumList(Enum[])
-     * @return read-only list of all values in the enum.
-     */
-    List<T> values();
+    private final CachedValue<List<T>> values;
 
     /**
-     * Read-only map which associates string representations of all
-     * enum values in the enum to their respective enum values.
+     * Constructs an extension of the Enum, having been provided the class.
      *
-     * Overriding this method is optional and should only be performed
-     * if enum value lookups from their string representations are needed.
-     *
-     * By default, map keys are set to enum.toString(). This behavior
-     * can be changed by calling the overloaded function `createStringMap`.
-     *
-     * The method should only be implemented by returning a
-     * private class member Map<T, E> created by `createStringMap`.
-     *
-     * @see EnumExtendable#createStringMap(List, Function)
-     * @see EnumExtendable#fromString(String)
-     * @return read-only map associating enum string representations to enum values.
+     * @param cls Class of the enum.
      */
-    default Map<String, T> stringMap()
+    public EnumExtendable(final Class<T> cls)
     {
-        throw new UnsupportedOperationException();
+        values = new CachedValue<>()
+        {
+            @Override List<T> recalculate(final List<T> oldValue)
+            {
+                return Arrays.stream(requireNonNull(cls).getEnumConstants())
+                        .collect(Collectors.collectingAndThen(
+                                Collectors.toList(), Collections::unmodifiableList));
+            }
+        };
     }
 
     /**
-     * Gets the number of elements in the enum.
+     * Read-only list of all values in the enum.
+     *
+     * This method should be used as an alternative to Enum#values().
+     * Enum#values() generates a new array each call, and should be avoided.
+     *
+     * @return read-only list of all values in the enum.
+     */
+    public List<T> values()
+    {
+        return values.get();
+    }
+
+    /**
+     * Queries the number of values in the enumeration.
      *
      * With normal enums this operation can only be performed by calling:
-     *  `values().length`, which has a linear overhead of complexity and storage.
-     *  or manually referencing the last enum element and calling ordinal(),
-     *  which is bug prone when enum values are shifted in order/removed/added.
+     *      *  `values().length`, which has a linear overhead of complexity and storage.
+     *      *  or manually referencing the last enum element and calling ordinal(),
+     *      *  which is bug prone when enum values are shifted in order/removed/added.
      *
-     * @return number of elements in the enum.
+     * @return Number of values in the enumeration.
      */
-    default int size()
+    public int size()
     {
-        return requireNonNull(values()).size();
+        return values.get().size();
     }
 
     /**
      * Retrieves an enum value based its respective ordinal value.
+     *
      * Enum ordinal values start at 0, increase sequentially, and
      * are assigned in the order of which the enum values are defined.
      *
@@ -88,29 +91,12 @@ public interface EnumExtendable<T extends Enum<?>>
      * @param ordinal Ordinal to query.
      * @return Enum element associated with the ordinal value.
      */
-    default T fromOrdinal(final int ordinal)
+    public T fromOrdinal(final int ordinal)
     {
-        final List<T> list = requireNonNull(values());
-        if (ordinal < 0 || ordinal >= requireNonNull(list).size())
+        final List<T> values = this.values.get();
+        if (ordinal < 0 || ordinal >= values.size())
             throw new IndexOutOfBoundsException(ordinal);
-        return list.get(ordinal);
-    }
-
-    /**
-     * Retrieves an enum value based on its respective string representation.
-     *
-     * By default, map keys are set to enum.toString(). This behavior
-     * can be changed by calling the overloaded function `createStringMap`.
-     *
-     * @see EnumExtendable#createStringMap(List, Function)
-     * @see EnumExtendable#stringMap()
-     * @param str String representation of the desired enum value.
-     * @return Enum value corresponding to the string, or null.
-     */
-    default T fromString(final String str)
-    {
-        final Map<String, T> reverseMap = requireNonNull(stringMap());
-        return reverseMap.get(requireNonNull(str));
+        return values.get(ordinal);
     }
 
     /**
@@ -122,106 +108,11 @@ public interface EnumExtendable<T extends Enum<?>>
      * @param value Enum value to parse.
      * @return formal name of the enum value, based on name().
      */
-    static String formalName(final Enum<?> value)
+    public static String formalName(final Enum<?> value)
     {
         final String name = requireNonNull(value.name()).toLowerCase();
         final char first = name.charAt(0);
         assert first >= 'a' && first <= 'z'; // This should be guaranteed thanks to the compiler.
         return Character.toUpperCase(first) + name.substring(1);
-    }
-
-    /**
-     * Creates an immutable list from all the values in an Enum.
-     * Designed to be used in conjunction with `values()`.
-     *
-     * EnumExtendable objects should have a private member List<T>,
-     * which is initialized as the return value of this function.
-     * The member should then be used as the return value of `values()`.
-     *
-     * @see EnumExtendable#values()
-     *
-     * EnumExtendables should create a private List<T> which
-     * is assigned to the return value of this function.
-     *
-     * `values()` should be passed as the parameter.
-     *
-     * Returned list should be used as the return value of `values()`.
-     * `createEnumList` should only be called once per EnumExtendable.
-     *
-     * @see EnumExtendable#values()
-     * @param values Values of the Enum, preferably from a static `values()` call.
-     * @param <T> Enum data type.
-     * @return immutable list of values in the enum, preferably used for `values()`.
-     */
-    static <T extends Enum<T>> List<T> createEnumList(final T[] values)
-    {
-        assert values.length > 0; // Not sure if this can happen.
-        return Arrays.stream(requireNonNull(values))
-                .distinct()
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(), Collections::unmodifiableList));
-    }
-
-    /**
-     * Creates an immutable map from all values in an Enum.
-     *
-     * The parameter list of values should be immutable,
-     * created initially from the `createEnumList` function.
-     *
-     * Map keys are assigned from the result of the callback function for each value.
-     *
-     * Returned map should be used as the return value of `stringMap()`.
-     * `createStringMap` should only be called once per EnumExtendable.
-     *
-     * @param values Values of the enum, preferably from a static `createEnumList()` call.
-     * @param toStringCb Callback associating enum values with their string representations.
-     * @param <T> Data type of the enum.
-     * @return Map associating string representations with their respective enum values.
-     */
-    static <T extends Enum<T>> Map<String, T> createStringMap(final List<T> values,
-                                                              final Function<T, String> toStringCb)
-    {
-        return toReverseMap(requireNonNull(values), requireNonNull(toStringCb));
-    }
-
-    /**
-     * Creates an immutable map from all values in an Enum.
-     *
-     * The parameter list of values should be immutable,
-     * created initially from the `createEnumList` function.
-     *
-     * Map keys are assigned from the result of the callback function for each value.
-     *
-     * Returned map should be used as the return value of `stringMap()`.
-     * `createStringMap` should only be called once per EnumExtendable.
-     *
-     * By default, map keys are set to enum.toString(). This behavior
-     * can be changed by calling the overloaded function `createStringMap`.
-     *
-     * @see #createStringMap(List, Function)
-     * @param values Values of the enum, preferably from a static `createEnumList()` call.
-     * @param <T> Data type of the enum.
-     * @return Map associating string representations with their respective enum values.
-     */
-    static <T extends Enum<T>> Map<String, T> createStringMap(final List<T> values)
-    {
-        return toReverseMap(requireNonNull(values), Enum::toString);
-    }
-
-    /* Helper function for #createStringMap(). */
-    private static <T extends Enum<T>> Map<String, T> toReverseMap(final List<T> values,
-                                                                   final Function<T, String> toStringCb)
-    {
-        assert values != null;
-        assert toStringCb != null;
-        final Map<String, T> reverseMap = new HashMap<>(values.size());
-        for (final T value : values)
-        {
-            final String k = requireNonNull(toStringCb.apply(requireNonNull(value)));
-            if (reverseMap.put(k, value) != null)
-                throw new IllegalArgumentException("String function is not one-to-one.");
-        }
-
-        return Collections.unmodifiableMap(reverseMap);
     }
 }

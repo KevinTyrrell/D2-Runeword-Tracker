@@ -43,10 +43,10 @@ public abstract class CachedValue<T> implements Serializable
     /**
      * Retrieves the cached value.
      *
-     * If the value was invalidated,
-     * it is recalculated and re-cached.
+     * If the value was flagged as invalidated, it is
+     * recalculated and re-cached before being returned.
      *
-     * @return Cached value.
+     * @return Cached value or re-calculated value.
      */
     public T get()
     {

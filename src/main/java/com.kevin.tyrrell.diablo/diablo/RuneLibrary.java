@@ -173,21 +173,4 @@ public enum RuneLibrary implements Saveable
                 .map(rune -> rune.getKey().getName() + "(x" + rune.getValue() + ')')
                 .collect(Collectors.joining(", "));
     }
-
-    final AtomicBoolean unsavedChanges = new AtomicBoolean();
-
-    /**
-     * Flag provided by the inheriting class which controls
-     * whether or not the object has unsaved changes present.
-     * The flag itself is completely managed by Saveable.
-     * <p>
-     * This method should only be called by the Saveable class.
-     * For flagging unsaved changes, call `flagUnsavedChanges()`.
-     *
-     * @return AtomicBoolean instance variable of the inheriting class.
-     */
-    @Override public AtomicBoolean getUnsavedChanges()
-    {
-        return unsavedChanges;
-    }
 }

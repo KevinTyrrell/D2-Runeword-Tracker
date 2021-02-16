@@ -18,11 +18,9 @@
 
 package com.kevin.tyrrell.diablo.diablo.item;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.kevin.tyrrell.diablo.util.EnumExtendable;
+
+import java.util.*;
 
 /**
  * Defines all possible item types in Diablo 2.
@@ -31,47 +29,124 @@ import java.util.stream.Collectors;
  */
 public enum ItemType
 {
-    AURIC_SHIELD("Auric Shield", 4, ItemTypeContainer.SHIELD),
-    AXE("Axe", 6, ItemTypeContainer.MELEE_WEAPON),
-    BODY_ARMOR("Body Armor", 4),
-    BOW("Bow", 6, ItemTypeContainer.MISSILE_WEAPON),
-    CLAW("Claw", 3, ItemTypeContainer.MELEE_WEAPON),
-    CLUB("Club", 3, ItemTypeContainer.MELEE_WEAPON),
-    CROSSBOW("Crossbow", 6, ItemTypeContainer.MISSILE_WEAPON),
-    HAMMER("Hammer", 6, ItemTypeContainer.MELEE_WEAPON),
-    HELM("Helm", 4),
-    MACE("Mace", 5, ItemTypeContainer.MELEE_WEAPON),
-    /* Orbs are not considered as a melee or missile weapon. */
-    ORB("Orb", 3),
-    POLEARM("Polearm", 6, ItemTypeContainer.MELEE_WEAPON),
-    SCEPTER("Scepter", 5, ItemTypeContainer.MELEE_WEAPON),
-    SHIELD("Shield", 4, ItemTypeContainer.SHIELD),
-    STAFF("Staff", 6, ItemTypeContainer.MELEE_WEAPON),
-    SWORD("Sword", 6, ItemTypeContainer.MELEE_WEAPON),
-    WAND("Wand", 2, ItemTypeContainer.MELEE_WEAPON);
+    WEAPON,
+    MELEE(WEAPON),
+    MISSILE(WEAPON),
+    SHIELD,
+    AURIC(SHIELD, 4),
+    AXE(MELEE, 6),
+    ARMOR(4),
+    BOW(MISSILE, 6),
+    CLAW(MELEE, 3),
+    CLUB(MELEE, 3),
+    CROSSBOW(MISSILE, 6),
+    HAMMER(MELEE, 6),
+    HELM(4),
+    MACE(MELEE, 5),
+    ORBS(3), // There are no valid Runewords for Orbs (verify?)
+    POLEARM(MELEE, 6),
+    SCEPTER(MELEE, 5),
+    STAFF(MELEE, 6),
+    SWORD(MELEE, 6),
+    WAND(MELEE, 2);
+
+    /* Max amount of sockets the Item type can have. */
+    private int maxSockets;
 
     /* Name of the Item type. */
     private final String name;
-    /* Max amount of sockets the Item type can have. */
-    private final int maxSockets;
+    /* Item type which contains this type. */
+    private final ItemType parent;
+    /* Item types which encompass other item types. */
+    private final EnumSet<ItemType> children;
 
-    ItemType(final String name, final int maxSockets, final ItemTypeContainer container)
+    /**
+     * Extension of the enum, adding additional functionality.
+     */
+    public static final EnumExtendable<ItemType> ext = new EnumExtendable<>()
     {
-        this(name, maxSockets);
-        assert container != null;
-        container.addType(this);
+        private final List<ItemType> values = EnumExtendable.createEnumList(ItemType.values());
+        private final Map<String, ItemType> stringMap = EnumExtendable.createStringMap(
+                values, itemType -> itemType.toString().toLowerCase());
+
+        @Override public List<ItemType> values() { return values; }
+        @Override public Map<String, ItemType> stringMap() { return stringMap; }
+    };
+
+    /* Constructs a root-level item-type. */
+    ItemType()
+    {
+        this(null, EnumSet.noneOf(ItemType.class), -1);
     }
 
-    ItemType(final String name, final int maxSockets)
+    /* Constructs a parent-level item-type. */
+    ItemType(final ItemType parent)
     {
-        assert name != null;
-        assert maxSockets >= 0;
-        this.name = name;
+        this(parent, EnumSet.noneOf(ItemType.class), -1);
+        parent.addType(this);
+    }
+
+    /* Constructs a child-level item-type. */
+    ItemType(final ItemType parent, final int maxSockets)
+    {
+        this(parent, null, maxSockets);
+        assert maxSockets > 0;
+        assert parent != null;
+        parent.addType(this, maxSockets);
+    }
+
+    /* Constructs a child-level item-type. */
+    ItemType(final int maxSockets)
+    {
+        this(null, null, maxSockets);
+        assert maxSockets > 0;
+    }
+
+    /* Shared constructor. */
+    ItemType(final ItemType parent, final EnumSet<ItemType> children, final int maxSockets)
+    {
+        this.parent = parent;
+        this.children = children;
         this.maxSockets = maxSockets;
+        name = EnumExtendable.formalName(this);
+    }
+
+    /* Add item type as a child, recursively upwards. */
+    private void addType(final ItemType type)
+    {
+        assert type != null;
+        assert children != null;
+        if (children.add(type) && parent != null)
+            parent.addType(this);
+    }
+
+    /* Used when checking for an increase of sockets. */
+    private void addType(final ItemType type, final int maxSockets)
+    {
+        assert type != null;
+        assert maxSockets > 0;
+        assert children != null;
+        if (!children.add(type)) return;
+        if (this.maxSockets < maxSockets)
+        {
+            /* Inform parent to check max sockets. */
+            this.maxSockets = maxSockets;
+            parent.addType(this, maxSockets);
+        }
+        else if (parent != null)
+            parent.addType(this);
     }
 
     /**
-     * @return Name of the Item type.
+     * @return Children of the item type.
+     */
+    public Set<ItemType> getChildren()
+    {
+        return children != null ? Collections.unmodifiableSet(children) : null;
+    }
+
+    /**
+     * @return Name of the item type.
      */
     public String getName()
     {
@@ -79,32 +154,15 @@ public enum ItemType
     }
 
     /**
-     * @return Max amount of sockets that this Item type can have.
+     * @return Maximum sockets bases the item type can have.
      */
     public int getMaxSockets()
     {
         return maxSockets;
     }
 
-    private static final Map<String, ItemType> fromString = Arrays.stream(values())
-            .collect(Collectors.collectingAndThen(
-                    /* name() throws a 'cannot resolve name' in Intellij 2018, Java 9.0.4, but compiles. */
-                    Collectors.toMap(k -> k.name().toLowerCase(), Function.identity()),
-                    Collections::unmodifiableMap));
-
     /**
-     * Looks up a Rune from a String.
-     * @param str String to use for the lookup.
-     * @return Rune corresponding to the String.
-     */
-    public static ItemType fromString(final String str)
-    {
-        assert str != null;
-        return fromString.get(str);
-    }
-
-    /**
-     * @return String representation of the Item type.
+     * @return String representation of the item type.
      */
     @Override public String toString()
     {

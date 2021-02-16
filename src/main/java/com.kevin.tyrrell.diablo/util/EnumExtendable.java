@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Extension for Enumerations, adding small extra functionality.
  *
- * @since 2.0
+ * @since 3.0
  */
 public interface EnumExtendable<T extends Enum<?>>
 {
@@ -111,6 +111,23 @@ public interface EnumExtendable<T extends Enum<?>>
     {
         final Map<String, T> reverseMap = requireNonNull(stringMap());
         return reverseMap.get(requireNonNull(str));
+    }
+
+    /**
+     * Parses the formal name of an enum value.
+     *
+     * e.g. 'APPLE' -> 'Apple'
+     *
+     * @see Enum#name()
+     * @param value Enum value to parse.
+     * @return formal name of the enum value, based on name().
+     */
+    static String formalName(final Enum<?> value)
+    {
+        final String name = requireNonNull(value.name()).toLowerCase();
+        final char first = name.charAt(0);
+        assert first >= 'a' && first <= 'z'; // This should be guaranteed thanks to the compiler.
+        return Character.toUpperCase(first) + name.substring(1);
     }
 
     /**

@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @since 2.0
  */
-public enum Rune implements EnumExtendable<Rune>
+public enum Rune
 {
     /* Drop Source: https://diablo2.diablowiki.net/Guide:Rune_Finder_Guide_v1.10,_by_Urlik */
     EL("El", 215493),

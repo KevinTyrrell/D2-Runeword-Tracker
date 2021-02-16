@@ -20,7 +20,6 @@ package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.console.Paragraph;
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
-import com.kevin.tyrrell.diablo.diablo.item.ItemTypeContainer;
 import com.kevin.tyrrell.diablo.util.EnumExtendable;
 
 import java.io.*;
@@ -33,15 +32,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.kevin.tyrrell.diablo.diablo.item.ItemType.*;
 import static com.kevin.tyrrell.diablo.diablo.item.ItemType.BODY_ARMOR;
-import static com.kevin.tyrrell.diablo.diablo.rune.Rune.*;
-import static com.kevin.tyrrell.diablo.diablo.rune.Rune.LEM;
 
 /**
  * Defines all possible Runewords in Diablo 2 as of patch 1.11.
- *
- * TODO: Replace hard-coded Runewords with JSON file.
  *
  * @since 2.0
  */

@@ -18,10 +18,6 @@
 
 package com.kevin.tyrrell.diablo;
 
-import com.kevin.tyrrell.diablo.diablo.Tracker;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import java.time.LocalDate;
 
 /**
@@ -33,7 +29,6 @@ public final class D2RunewordTracker
 {
     public static void main(final String[] args)
     {
-        Tracker.run();
     }
 
     /**

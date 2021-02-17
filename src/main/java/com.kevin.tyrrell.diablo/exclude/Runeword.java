@@ -20,19 +20,11 @@ package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.console.Paragraph;
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
-import com.kevin.tyrrell.diablo.util.EnumExtendable;
 
-import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.kevin.tyrrell.diablo.diablo.item.ItemType.BODY_ARMOR;
 
 /**
  * Defines a Runeword which is a specific arrangement of various Runes.

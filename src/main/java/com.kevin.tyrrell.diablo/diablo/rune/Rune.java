@@ -20,9 +20,6 @@ package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.util.EnumExtendable;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Defines all 26 Runes in Diabo 2, along with related drop rates.
  *
@@ -75,15 +72,7 @@ public enum Rune
     /**
      * Extension of the enum, adding additional functionality.
      */
-    public static final EnumExtendable<Rune> ext = new EnumExtendable<>()
-    {
-        private final List<Rune> values = EnumExtendable.createEnumList(Rune.values());
-        private final Map<String, Rune> stringMap = EnumExtendable.createStringMap(
-                values, rune -> rune.toString().toLowerCase());
-
-        @Override public List<Rune> values() { return values; }
-        @Override public Map<String, Rune> stringMap() { return stringMap; }
-    };
+    public static final EnumExtendable<Rune> extension = new EnumExtendable<>(Rune.class);
     
     /**
      * @param name Name of the rune.
@@ -109,7 +98,7 @@ public enum Rune
      */
     public int getTier()
     {
-        return (int)((double)ordinal() / ext.size() * 3) - 1;
+        return (int)((double)ordinal() / extension.size() * 3) - 1;
     }
 
     /**

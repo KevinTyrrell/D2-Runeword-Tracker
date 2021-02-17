@@ -63,15 +63,7 @@ public enum ItemType
     /**
      * Extension of the enum, adding additional functionality.
      */
-    public static final EnumExtendable<ItemType> ext = new EnumExtendable<>()
-    {
-        private final List<ItemType> values = EnumExtendable.createEnumList(ItemType.values());
-        private final Map<String, ItemType> stringMap = EnumExtendable.createStringMap(
-                values, itemType -> itemType.toString().toLowerCase());
-
-        @Override public List<ItemType> values() { return values; }
-        @Override public Map<String, ItemType> stringMap() { return stringMap; }
-    };
+    public static final EnumExtendable<ItemType> extension = new EnumExtendable<>(ItemType.class);
 
     /* Constructs a root-level item-type. */
     ItemType()

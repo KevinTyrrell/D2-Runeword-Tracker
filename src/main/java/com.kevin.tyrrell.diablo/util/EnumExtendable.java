@@ -47,7 +47,7 @@ public class EnumExtendable<T extends Enum<?>> implements StringToValue<T>
     {
         values = new CachedValue<>()
         {
-            @Override List<T> recalculate(final List<T> oldValue)
+            @Override protected List<T> recalculate(final List<T> oldValue)
             {
                 return Arrays.stream(requireNonNull(cls).getEnumConstants())
                         .collect(Collectors.collectingAndThen(
@@ -57,7 +57,7 @@ public class EnumExtendable<T extends Enum<?>> implements StringToValue<T>
 
         stringMap = new CachedValue<>()
         {
-            @Override Map<String, T> recalculate(Map<String, T> oldValue)
+            @Override protected Map<String, T> recalculate(Map<String, T> oldValue)
             {
                 return StringToValue.createStringMap(values.get().stream(), EnumExtendable.this::stringMapKeyer);
             }

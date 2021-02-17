@@ -21,8 +21,10 @@ package com.kevin.tyrrell.diablo.util;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,9 +33,10 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-public class EnumExtendable<T extends Enum<?>>
+public class EnumExtendable<T extends Enum<?>> implements StringToValue<T>
 {
     private final CachedValue<List<T>> values;
+    private final CachedValue<Map<String, T>> stringMap;
 
     /**
      * Constructs an extension of the Enum, having been provided the class.
@@ -51,6 +54,31 @@ public class EnumExtendable<T extends Enum<?>>
                                 Collectors.toList(), Collections::unmodifiableList));
             }
         };
+
+        stringMap = new CachedValue<>()
+        {
+            @Override Map<String, T> recalculate(Map<String, T> oldValue)
+            {
+                return StringToValue.createStringMap(values.get().stream(), EnumExtendable.this::stringMapKeyer);
+            }
+        };
+    }
+
+    /**
+     * Keys the specified enum value into the string map.
+     *
+     * By default, the keys are instantiated by the following:
+     *      `value.toString.toLowerCase()`
+     *
+     * Override this method to allow for control over keying.
+     *
+     * @param value Value to be parsed.
+     * @return Key used for enum value lookups by string.
+     */
+    String stringMapKeyer(final T value)
+    {
+        assert value != null;
+        return value.toString().toLowerCase();
     }
 
     /**
@@ -59,7 +87,7 @@ public class EnumExtendable<T extends Enum<?>>
      * This method should be used as an alternative to Enum#values().
      * Enum#values() generates a new array each call, and should be avoided.
      *
-     * @return read-only list of all values in the enum.
+     * @return Read-only list of all values in the enum.
      */
     public List<T> values()
     {
@@ -114,5 +142,20 @@ public class EnumExtendable<T extends Enum<?>>
         final char first = name.charAt(0);
         assert first >= 'a' && first <= 'z'; // This should be guaranteed thanks to the compiler.
         return Character.toUpperCase(first) + name.substring(1);
+    }
+
+    /**
+     * Read-only map which associates string representations
+     * of objects to their respective constant object values.
+     * <p>
+     * By default, map keys are set to Object#toString(). This behavior
+     * can be changed by overloading StringToValue#createStringMap().
+     *
+     * @return Read-only map associating string representations to object values.
+     * @see StringToValue#createStringMap(Stream, Function)
+     */
+    @Override public Map<String, T> stringMap()
+    {
+        return stringMap.get();
     }
 }

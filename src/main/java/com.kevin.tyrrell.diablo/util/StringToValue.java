@@ -26,8 +26,8 @@ public interface StringToValue<T>
      * This method should be implemented such that the returned map is
      * an instance variable of the class which is implementing this method.
      *
-     * @see StringToValue#createStringMap(Stream, Function)
      * @return Read-only map associating string representations to object values.
+     * @see StringToValue#createStringMap(Stream, Function)
      */
     Map<String, T> stringMap();
 
@@ -37,10 +37,10 @@ public interface StringToValue<T>
      * By default, map keys are set to Object#toString(). This behavior
      * can be changed by overloading StringToValue#createStringMap().
      *
-     * @see #stringMap()
-     * @see StringToValue#createStringMap(Stream, Function)
      * @param str String representation of the desired object value.
      * @return Object value corresponding to the string, or null.
+     * @see #stringMap()
+     * @see StringToValue#createStringMap(Stream, Function)
      */
     default T fromString(final String str)
     {
@@ -57,11 +57,11 @@ public interface StringToValue<T>
      *
      * Keys are dictated by the value(s) returned by the specified callback.
      *
-     * @see #stringMap()
      * @param values Values to be associated in the map.
      * @param toStringCb Callback used to parse Objects -> Strings.
      * @param <T> Data type of the corresponding objects.
      * @return Map associating string representations with their respective object values.
+     * @see #stringMap()
      */
     static <T> Map<String, T> createStringMap(final Stream<T> values,
                                                               final Function<T, String> toStringCb)
@@ -79,11 +79,11 @@ public interface StringToValue<T>
      * By default, map keys are set to enum.toString(). This behavior
      * can be changed by calling the overloaded function `createStringMap`.
      *
-     * @see #stringMap()
-     * @see StringToValue#createStringMap(Stream, Function)
      * @param values Values to be associated in the map.
      * @param <T> Data type of the corresponding objects.
      * @return Map associating string representations with their respective object values.
+     * @see #stringMap()
+     * @see StringToValue#createStringMap(Stream, Function)
      */
     static <T> Map<String, T> createStringMap(final Stream<T> values)
     {

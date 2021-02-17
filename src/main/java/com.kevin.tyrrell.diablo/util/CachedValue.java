@@ -41,6 +41,14 @@ public abstract class CachedValue<T> implements Serializable
     }
 
     /**
+     * Invalidate the cached value, forcing it to recalculate later.
+     */
+    public void invalidate()
+    {
+        invalidated = true;
+    }
+
+    /**
      * Retrieves the cached value.
      *
      * If the value was flagged as invalidated, it is

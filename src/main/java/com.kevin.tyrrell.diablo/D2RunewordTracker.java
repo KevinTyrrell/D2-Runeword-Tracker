@@ -29,6 +29,7 @@ public final class D2RunewordTracker
 {
     public static void main(final String[] args)
     {
+        System.out.println("Hello, World!");
     }
 
     /**
@@ -59,7 +60,7 @@ public final class D2RunewordTracker
         /**
          * Date on which the release was compiled.
          */
-        public final LocalDate COMPILED_ON = LocalDate.of(COMPILE_DAY, COMPILE_MONTH, COMPILE_YEAR);
+        public final LocalDate COMPILED_ON = LocalDate.of(COMPILE_YEAR, COMPILE_MONTH, COMPILE_DAY);
 
         /**
          * @return String representation of the version.

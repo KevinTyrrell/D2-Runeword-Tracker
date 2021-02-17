@@ -94,7 +94,7 @@ public class RuneMap implements Serializable
      *
      * @param stream Stream of runes.
      */
-    public void addAll(final Stream<Rune> stream)
+    public void addRunes(final Stream<Rune> stream)
     {
         final Map<Rune, Integer> rc = runeCount.get();
         requireNonNull(stream)
@@ -136,9 +136,11 @@ public class RuneMap implements Serializable
     public double progressTowards(final RuneMap other)
     {
         final Map<Rune, Integer> a = runeCount.get(), b = requireNonNull(other).runeCount.get();
+        if (b.isEmpty()) return 1; // Divide by zero protection.
         return runeCount.get().keySet().stream()
                 .filter(b::containsKey) // Check only runes in common.
-                .mapToDouble(r -> r.getRarity() * (Math.min(a.get(r), b.get(r))))
+                /* Invert the rarity and multiply by at MOST the quantity they have in common. */
+                .mapToDouble(r -> (1 / r.getRarity()) * (Math.min(a.get(r), b.get(r))))
                 .sum() / other.appraisal.get();
     }
 
@@ -147,7 +149,7 @@ public class RuneMap implements Serializable
     {
         assert runes != null;
         return runes.getRunes().entrySet().stream()
-                .mapToDouble(e -> e.getKey().getRarity() * e.getValue())
+                .mapToDouble(e -> (1 / e.getKey().getRarity()) * e.getValue())
                 .sum();
     }
 

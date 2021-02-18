@@ -6,9 +6,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,7 +70,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
      */
     public void moveRunes(final Rune key, final int diff)
     {
-        runeCount.get().merge(requireNonNull(key), diff, RuneMap::runeRemapper);
+        runeCount.merge(requireNonNull(key), diff, RuneMap::runeRemapper);
         appraisal.invalidate();
     }
 
@@ -85,7 +83,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
     public void addRunes(final Rune key, final int num)
     {
         if (num <= 0) throw new IllegalArgumentException("Number of runes must be positive.");
-        runeCount.get().merge(requireNonNull(key), num, RuneMap::runeAddRemapper);
+        runeCount.merge(requireNonNull(key), num, RuneMap::runeAddRemapper);
         appraisal.invalidate();
     }
 
@@ -98,7 +96,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
     public void tossRunes(final Rune key, final int num)
     {
         if (num <= 0) throw new IllegalArgumentException("Number of runes must be positive.");
-        runeCount.get().merge(requireNonNull(key), num, RuneMap::runeTossRemapper);
+        runeCount.merge(requireNonNull(key), num, RuneMap::runeTossRemapper);
         appraisal.invalidate();
     }
 
@@ -109,9 +107,8 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
      */
     public void addRunes(final Stream<Rune> stream)
     {
-        final Map<Rune, Integer> rc = runeCount.get();
         requireNonNull(stream)
-                .forEach(r -> rc.merge(r, 1, RuneMap::runeRemapper));
+                .forEach(r -> runeCount.merge(r, 1, RuneMap::runeRemapper));
         appraisal.invalidate();
     }
 

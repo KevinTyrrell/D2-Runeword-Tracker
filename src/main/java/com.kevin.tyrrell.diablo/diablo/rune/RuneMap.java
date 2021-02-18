@@ -6,6 +6,10 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -15,9 +19,9 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-public class RuneMap implements Serializable
+public class RuneMap implements ReadOnlyRuneMap, Serializable
 {
-    private final CachedValue<Map<Rune, Integer>> runeCount;
+    private final Map<Rune, Integer> runeCount;
     private transient final CachedValue<Map<Rune, Integer>> readOnlyRC;
     private transient final CachedValue<Double> appraisal;
 
@@ -26,19 +30,28 @@ public class RuneMap implements Serializable
      */
     public RuneMap()
     {
-        runeCount = new CachedValue<>()
-        {
-            @Override protected Map<Rune, Integer> recalculate(final Map<Rune, Integer> oldValue)
-            {
-                return new EnumMap<>(Rune.class);
-            }
-        };
+        this(new EnumMap<>(Rune.class));
+    }
+
+    public RuneMap(final Stream<Rune> stream)
+    {
+        this(requireNonNull(stream)
+                .collect(Collectors.toMap(
+                        Function.identity(), rune -> 1, Integer::sum,
+                        () -> new EnumMap<>(Rune.class))));
+    }
+
+    /* Shared constructor. */
+    private RuneMap(final Map<Rune, Integer> runes)
+    {
+        assert runes != null;
+        runeCount = runes;
 
         readOnlyRC = new CachedValue<>()
         {
             @Override protected Map<Rune, Integer> recalculate(final Map<Rune, Integer> oldValue)
             {
-                return Collections.unmodifiableMap(runeCount.get());
+                return Collections.unmodifiableMap(runeCount);
             }
         };
 
@@ -105,47 +118,26 @@ public class RuneMap implements Serializable
     /**
      * @return Read-only view of the rune map.
      */
-    public Map<Rune, Integer> getRunes()
+    @Override public Map<Rune, Integer> getRunes()
     {
         return readOnlyRC.get();
     }
 
     /**
      * Appraises the rarity of a rune map.
-     *
-     * Appraisal is directly correletated to the rarity
+     * <p>
+     * Appraisal is directly correlated to the rarity
      * of the runes and their respective quantities.
      *
      * @return Appraisal of the rune map.
      */
-    public double appraise()
+    @Override public double appraise()
     {
         return appraisal.get();
     }
 
-    /**
-     * Evaluates the progress towards collecting all runes from another rune map.
-     *
-     * Completion of 0 indicates neither map have any runes in common, while a
-     * completion of 1 indicates the map at least has all of the other maps runes.
-     * Having a higher quantity of an in-common rune will not add to completion.
-     *
-     * @param other Other rune map to compare to.
-     * @return Progress towards matching another rune map, from [0, 1].
-     */
-    public double progressTowards(final RuneMap other)
-    {
-        final Map<Rune, Integer> a = runeCount.get(), b = requireNonNull(other).runeCount.get();
-        if (b.isEmpty()) return 1; // Divide by zero protection.
-        return runeCount.get().keySet().stream()
-                .filter(b::containsKey) // Check only runes in common.
-                /* Invert the rarity and multiply by at MOST the quantity they have in common. */
-                .mapToDouble(r -> (1 / r.getRarity()) * (Math.min(a.get(r), b.get(r))))
-                .sum() / other.appraisal.get();
-    }
-
     /* Helper method to enable caching. */
-    private static double appraiseRunes(final RuneMap runes)
+    protected static double appraiseRunes(final RuneMap runes)
     {
         assert runes != null;
         return runes.getRunes().entrySet().stream()

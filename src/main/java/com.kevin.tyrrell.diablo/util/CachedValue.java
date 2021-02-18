@@ -10,7 +10,9 @@ import java.io.Serializable;
 public abstract class CachedValue<T> implements Serializable
 {
     private T value;
-    private transient boolean invalidated;
+
+    /* Flag which dictates whether the cached value is invalidated. */
+    private static final Object INVALIDATED = new Object();
 
     /**
      * Recalculates the value, then caches it.
@@ -25,8 +27,7 @@ public abstract class CachedValue<T> implements Serializable
      */
     public CachedValue()
     {
-        value = null;
-        invalidated = true;
+        invalidate();
     }
 
     /**
@@ -37,15 +38,15 @@ public abstract class CachedValue<T> implements Serializable
     public CachedValue(final T initialValue)
     {
         value = initialValue;
-        invalidated = false;
     }
 
     /**
      * Invalidate the cached value, forcing it to recalculate later.
      */
+    @SuppressWarnings("unchecked")
     public void invalidate()
     {
-        invalidated = true;
+        value = (T)INVALIDATED; // Flag data as invalidated.
     }
 
     /**
@@ -58,12 +59,8 @@ public abstract class CachedValue<T> implements Serializable
      */
     public T get()
     {
-        if (invalidated)
-        {
+        if (value == INVALIDATED)
             value = recalculate(value);
-            invalidated = false;
-        }
-
         return value;
     }
 }

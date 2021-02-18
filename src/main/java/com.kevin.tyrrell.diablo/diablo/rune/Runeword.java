@@ -20,97 +20,63 @@ package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.console.Paragraph;
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.util.CachedValue;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Defines a Runeword which is a specific arrangement of various Runes.
  *
  * @since 2.0
  */
-public class Runeword
+public class Runeword implements ReadOnlyRuneMap
 {
-    /* Name of the Runeword. */
     private final String name;
-    /* Item types in which this Runeword can go into. */
-    private final Set<ItemType> types;
-    /* Required level for the Runeword. */
+    /* Correct rune order. */
+    private final String word;
+    /* Required character level. */
     private final int level;
+    /* Number of open sockets required. */
+    private final int requiredSockets;
+    /* Immutable set of compatible bases. */
+    private final Set<ItemType> types;
+    /* Runes and their quantities. */
+    private final RuneMap runes;
 
-    // Cache sockets
-    /* Word which activates the Runeword. */
-    private final String word; // TODO: Cache this
-    /* Runes which the Runeword requires, in order. */
-    private final Map<Rune, Integer> runes;
-    /* Summed rarity of all of the Runes. */
-    private final double rarity; // TODO: Cache this
-
-
-
-    Runeword(final String name, final int level, final Supplier<Set<ItemType>> types, final Rune... runes)
+    public Runeword(final String name, final int level, final Stream<ItemType> types, final Stream<Rune> runes)
     {
-        assert name != null;
-        assert level >= 1;
-        assert types != null;
-        assert runes != null;
-        assert runes.length > 0;
-
-        this.name = name;
+        if (level <= 0 || level > 99)
+            throw new IllegalArgumentException("Runeword level must be within bounds [1, 99]");
+        this.name = requireNonNull(name);
         this.level = level;
-        /* Sort the Runes in descending order, map to Rune->Quantity, and make map read-only. */
-        this.runes = Arrays.stream(runes)
-                .sorted(Collections.reverseOrder())
-                .collect(Collectors.collectingAndThen(
-                        Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.summingInt(e -> 1)),
-                        Collections::unmodifiableMap));
-        /* Only include Item types which can actually have enough sockets to support the Runeword. */
-        this.types = types.get().stream()
-                .filter(t -> t.getMaxSockets() >= runes.length)
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toCollection(() -> EnumSet.noneOf(ItemType.class)),
-                        Collections::unmodifiableSet));
-        word = Arrays.stream(runes).map(Rune::getName).collect(Collectors.joining());
-        /* Sum the total rarity of all the Runes in the word. */
-        rarity = this.runes.entrySet().stream()
-                .mapToDouble(entry -> entry.getValue() * entry.getKey().getRarity())
-                .sum();
+        this.runes = new RuneMap();
     }
 
     /**
-     * Calculates a progress percentage for the Runeword to be completed.
-     * A Runeword is 100% complete when all Runes it requires are collected.
-     * Runes have weighted rarities, so higher Runes make more of an impact.
-     * @param runes Runes the user owns.
-     * @return percentage of completion (between 0.00% and 1.00% inclusive).
+     * @return Read-only view of the rune map.
      */
-    public double calculateProgress(final Map<Rune, Integer> runes)
+    @Override public Map<Rune, Integer> getRunes()
     {
-        assert runes != null;
-        return Math.round(this.runes.entrySet().stream()
-                .filter(entry -> runes.containsKey(entry.getKey()))
-                .mapToDouble(entry ->
-                {
-                    final Rune r = entry.getKey();
-                    return Math.min(entry.getValue(), runes.get(r)) * calculateProgress(r);
-                })
-                /* Sum and round to two decimal places. */
-                .sum() * 100.0) / 100.0;
+        return runes.getRunes();
     }
 
     /**
-     * Calculates a progress percentage for the Runeword to be completed.
-     * A Runeword is 100% complete when all Runes it requires are collected.
-     * Runes have weighted rarities, so higher Runes make more of an impact.
-     * @param rune Rune the user owns.
-     * @return percentage of completion (between 0% and 1% inclusive).
+     * Appraises the rarity of a rune map.
+     * <p>
+     * Appraisal is directly correlated to the rarity
+     * of the runes and their respective quantities.
+     *
+     * @return Appraisal of the rune map.
      */
-    public double calculateProgress(final Rune rune)
+    @Override public double appraise()
     {
-        assert rune != null;
-        return rune.getRarity() / rarity;
+        return runes.appraise();
     }
 
     /**
@@ -122,45 +88,11 @@ public class Runeword
     }
 
     /**
-     * @return Sequence of Runes of the Runeword
+     * @return Sequence of Runes to activate the Runeword.
      */
     public String getWord()
     {
         return word;
-    }
-
-    /**
-     * @return Number of sockets required for the Runeword.
-     */
-    public int getRequiredSockets()
-    {
-        return runes.values().stream()
-                .mapToInt(e -> e)
-                .sum();
-    }
-
-    /**
-     * @return Runes and their quantity for the Runeword.
-     */
-    public Map<Rune, Integer> getRunes()
-    {
-        return runes;
-    }
-
-    /**
-     * @return Types the Runeword is applicable for.
-     */
-    public Set<ItemType> getTypes()
-    {
-        return types;
-    }
-
-    /**
-     * @return Description of the Runeword, as if hovered-over in-game.
-     */
-    public Paragraph getDescription()
-    {
-        return descriptions.get(this);
     }
 
     /**
@@ -171,48 +103,19 @@ public class Runeword
         return level;
     }
 
-    private static final Map<String, Runeword> fromString = Arrays.stream(Runeword.values())
-            .collect(Collectors.collectingAndThen(
-                    Collectors.toMap(k -> k.name().toLowerCase(), Function.identity()),
-                    Collections::unmodifiableMap));
+    /**
+     * @return Number of sockets required for the Runeword.
+     */
+    public int getRequiredSockets()
+    {
+        return requiredSockets;
+    }
 
     /**
-     * Looks up a Runeword from a String.
-     * @param str String to use for the lookup.
-     * @return Runeword corresponding to the String.
+     * @return Types of items in which the Runeword can be placed in.
      */
-    public static Runeword fromString(final String str)
+    public Set<ItemType> getTypes()
     {
-        assert str != null;
-        return fromString.get(str);
-    }
-
-    @Override public String toString()
-    {
-        return "\"" + name + "\" " + word;
-    }
-
-    public static class Comparator implements java.util.Comparator<Runeword>
-    {
-        /**
-         * Sums up the rarity of each Rune of a specified Runeword.
-         * @param rw Runeword to calculate.
-         * @return Rarity of the Runeword.
-         */
-        private static double calculateRarity(final Runeword rw)
-        {
-            assert rw != null;
-            return rw.getRunes().entrySet().stream()
-                    .mapToDouble(runeEntry -> runeEntry.getKey().getRarity() * runeEntry.getValue())
-                    .sum();
-        }
-
-        @Override public int compare(final Runeword o1, final Runeword o2)
-        {
-            assert o1 != null;
-            assert o2 != null;
-            if (o1 == o2) return 0;
-            return Double.compare(calculateRarity(o1), calculateRarity(o2));
-        }
+        return types;
     }
 }

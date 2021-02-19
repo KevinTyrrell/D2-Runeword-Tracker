@@ -44,7 +44,7 @@ public enum ItemType
     HAMMER(MELEE, 6),
     HELM(4),
     MACE(MELEE, 5),
-    ORBS(3), // There are no valid Runewords for Orbs (verify?)
+    ORB(3), // There are no valid Runewords for Orbs (verify?)
     POLEARM(MELEE, 6),
     SCEPTER(MELEE, 5),
     STAFF(MELEE, 6),
@@ -97,7 +97,6 @@ public enum ItemType
                 child = parent; parent = parentMap.get(parent); // Iterate upwards.
             }
         }
-
         /* Ensure all children all read-only. */
         childrenMap.forEach((key, value) -> key.children = Collections.unmodifiableSet(value));
     }

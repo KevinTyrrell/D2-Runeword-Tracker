@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
-import static com.kevin.tyrrell.diablo.diablo.rune.Rune.*;
 import static com.kevin.tyrrell.diablo.diablo.item.ItemType.*;
 
 /**

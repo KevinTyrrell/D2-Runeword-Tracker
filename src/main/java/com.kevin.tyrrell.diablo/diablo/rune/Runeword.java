@@ -37,6 +37,8 @@ public class Runeword implements ReadOnlyRuneMap
     private final String name;
     /* Correct rune order. */
     private final String word;
+    /* Description of the affixes. */
+    private final String description;
     /* Required character level. */
     private final int level;
     /* Number of open sockets required. */
@@ -46,13 +48,14 @@ public class Runeword implements ReadOnlyRuneMap
     /* Runes and their quantities. */
     private final ReadOnlyRuneMap runes;
 
-    public Runeword(final String name, final int level, final Stream<ItemType> types, final Stream<Rune> runes)
+    public Runeword(final String name, final int level, final String description,
+                    final Stream<ItemType> types, final Stream<Rune> runes)
     {
         if (level <= 0 || level > 99)
             throw new IllegalArgumentException("Runeword level must be within bounds [1, 99]");
         this.name = requireNonNull(name);
         this.level = level;
-
+        this.description = requireNonNull(description);
         this.types = null;
 
         // Iterate through runes and grab the word, sockets, and rune counts.
@@ -95,6 +98,14 @@ public class Runeword implements ReadOnlyRuneMap
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * @return Description of the Runeword.
+     */
+    public String getDescription()
+    {
+        return description;
     }
 
     /**

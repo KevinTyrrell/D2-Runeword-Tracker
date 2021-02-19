@@ -21,6 +21,7 @@ package com.kevin.tyrrell.diablo.diablo.item;
 import com.kevin.tyrrell.diablo.util.EnumExtendable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Defines all possible item types in Diablo 2.
@@ -80,12 +81,13 @@ public enum ItemType
             }
             else children.add(child);
         }
+        parentMap.keySet().forEach(k -> k.children = null); // Bereave all parents.
 
         /* Add all distant ancestors to each parent into their children collection. */
         for (final Map.Entry<ItemType, ItemType> itEntry : parentMap.entrySet())
         {
             ItemType child = itEntry.getValue(), parent = parentMap.get(child);
-            parent.sockets = Math.max(parent.sockets, itEntry.getKey().sockets);
+            child.sockets = Math.max(child.sockets, itEntry.getKey().sockets);
 
             while (parent != null)
             {
@@ -119,6 +121,20 @@ public enum ItemType
     public Set<ItemType> getChildren()
     {
         return children;
+    }
+
+    /**
+     * Creates a new stream of the item type and all of its children.
+     *
+     * If the item type being included in the returned
+     * stream is undesired, call #getChildren() instead.
+     *
+     * @return Stream of the item type and all of its children.
+     * @see #getChildren()
+     */
+    public Stream<ItemType> stream()
+    {
+        return Stream.concat(Stream.of(this), children.stream());
     }
 
     /**

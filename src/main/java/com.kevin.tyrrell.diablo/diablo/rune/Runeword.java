@@ -23,7 +23,6 @@ import com.kevin.tyrrell.diablo.diablo.item.ItemType;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;

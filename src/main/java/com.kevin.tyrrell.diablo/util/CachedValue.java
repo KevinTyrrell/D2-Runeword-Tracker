@@ -17,10 +17,9 @@ public abstract class CachedValue<T> implements Serializable
     /**
      * Recalculates the value, then caches it.
      *
-     * @param oldValue Current value to be recalculated.
      * @return Recalculated value to be cached.
      */
-    protected abstract T recalculate(final T oldValue);
+    protected abstract T recalculate();
 
     /**
      * Constructs a new cached value.
@@ -60,7 +59,7 @@ public abstract class CachedValue<T> implements Serializable
     public T get()
     {
         if (value == INVALIDATED)
-            value = recalculate(value);
+            value = recalculate();
         return value;
     }
 }

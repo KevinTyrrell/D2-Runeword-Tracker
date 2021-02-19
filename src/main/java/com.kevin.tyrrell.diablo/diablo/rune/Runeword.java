@@ -18,14 +18,12 @@
 
 package com.kevin.tyrrell.diablo.diablo.rune;
 
-import com.kevin.tyrrell.diablo.console.Paragraph;
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
-import com.kevin.tyrrell.diablo.util.CachedValue;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -47,7 +45,7 @@ public class Runeword implements ReadOnlyRuneMap
     /* Immutable set of compatible bases. */
     private final Set<ItemType> types;
     /* Runes and their quantities. */
-    private final RuneMap runes;
+    private final ReadOnlyRuneMap runes;
 
     public Runeword(final String name, final int level, final Stream<ItemType> types, final Stream<Rune> runes)
     {
@@ -55,7 +53,20 @@ public class Runeword implements ReadOnlyRuneMap
             throw new IllegalArgumentException("Runeword level must be within bounds [1, 99]");
         this.name = requireNonNull(name);
         this.level = level;
-        this.runes = new RuneMap();
+
+        this.types = null;
+
+        // Iterate through runes and grab the word, sockets, and rune counts.
+        final AtomicInteger requiredSockets = new AtomicInteger();
+        final StringBuilder builder = new StringBuilder();
+        this.runes = new RuneMap(runes
+                .filter(r -> // abuse filter to double-dip on stream.
+                {
+                    requiredSockets.incrementAndGet();
+                    builder.append(r.getName()); return true;
+                }));
+        this.requiredSockets = requiredSockets.get();
+        word = builder.toString();
     }
 
     /**

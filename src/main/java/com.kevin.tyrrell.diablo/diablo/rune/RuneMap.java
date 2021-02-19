@@ -47,7 +47,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
 
         readOnlyRC = new CachedValue<>()
         {
-            @Override protected Map<Rune, Integer> recalculate(final Map<Rune, Integer> oldValue)
+            @Override protected Map<Rune, Integer> recalculate()
             {
                 return Collections.unmodifiableMap(runeCount);
             }
@@ -55,7 +55,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
 
         appraisal = new CachedValue<>()
         {
-            @Override protected Double recalculate(final Double oldValue)
+            @Override protected Double recalculate()
             {
                 return RuneMap.appraiseRunes(RuneMap.this);
             }

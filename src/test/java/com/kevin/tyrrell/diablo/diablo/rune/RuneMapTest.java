@@ -9,9 +9,9 @@ import static org.junit.Assert.*;
 import static com.kevin.tyrrell.diablo.diablo.rune.Rune.*;
 
 /**
- * ...
+ * JUnit Testing Class
  *
- * @since 1.0
+ * @since 3.0
  */
 public class RuneMapTest
 {

@@ -14,7 +14,7 @@ import static java.util.Objects.requireNonNull;
  * @param <T> Type of values which can be queried..
  * @since 3.0
  */
-public interface StringToValue<T>
+public interface Queryable<T>
 {
     /**
      * Read-only map which associates string representations
@@ -27,7 +27,7 @@ public interface StringToValue<T>
      * an instance variable of the class which is implementing this method.
      *
      * @return Read-only map associating string representations to object values.
-     * @see StringToValue#createStringMap(Stream, Function)
+     * @see Queryable#createStringMap(Stream, Function)
      */
     Map<String, T> stringMap();
 
@@ -40,7 +40,7 @@ public interface StringToValue<T>
      * @param str String representation of the desired object value.
      * @return Object value corresponding to the string, or null.
      * @see #stringMap()
-     * @see StringToValue#createStringMap(Stream, Function)
+     * @see Queryable#createStringMap(Stream, Function)
      */
     default T fromString(final String str)
     {
@@ -83,7 +83,7 @@ public interface StringToValue<T>
      * @param <T> Data type of the corresponding objects.
      * @return Map associating string representations with their respective object values.
      * @see #stringMap()
-     * @see StringToValue#createStringMap(Stream, Function)
+     * @see Queryable#createStringMap(Stream, Function)
      */
     static <T> Map<String, T> createStringMap(final Stream<T> values)
     {

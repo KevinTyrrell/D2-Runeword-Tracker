@@ -33,7 +33,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-public class EnumExtendable<T extends Enum<?>> implements StringToValue<T>
+public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
 {
     private final CachedValue<List<T>> values;
     private final CachedValue<Map<String, T>> stringMap;
@@ -47,7 +47,7 @@ public class EnumExtendable<T extends Enum<?>> implements StringToValue<T>
     {
         values = new CachedValue<>()
         {
-            @Override protected List<T> recalculate(final List<T> oldValue)
+            @Override protected List<T> recalculate()
             {
                 return Arrays.stream(requireNonNull(cls).getEnumConstants())
                         .collect(Collectors.collectingAndThen(
@@ -57,9 +57,9 @@ public class EnumExtendable<T extends Enum<?>> implements StringToValue<T>
 
         stringMap = new CachedValue<>()
         {
-            @Override protected Map<String, T> recalculate(Map<String, T> oldValue)
+            @Override protected Map<String, T> recalculate()
             {
-                return StringToValue.createStringMap(values.get().stream(), EnumExtendable.this::stringMapKeyer);
+                return Queryable.createStringMap(values.get().stream(), EnumExtendable.this::stringMapKeyer);
             }
         };
     }
@@ -152,7 +152,7 @@ public class EnumExtendable<T extends Enum<?>> implements StringToValue<T>
      * can be changed by overloading StringToValue#createStringMap().
      *
      * @return Read-only map associating string representations to object values.
-     * @see StringToValue#createStringMap(Stream, Function)
+     * @see Queryable#createStringMap(Stream, Function)
      */
     @Override public Map<String, T> stringMap()
     {

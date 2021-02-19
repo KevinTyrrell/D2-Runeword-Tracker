@@ -50,83 +50,67 @@ public enum ItemType
     SWORD(MELEE, 6),
     WAND(MELEE, 2);
 
-    /* Max amount of sockets the Item type can have. */
-    private int maxSockets;
-
     /* Name of the Item type. */
     private final String name;
-    /* Item type which contains this type. */
-    private final ItemType parent;
+    /* Max amount of sockets the Item type can have. */
+    private int sockets;
     /* Item types which encompass other item types. */
-    private final EnumSet<ItemType> children;
+    private Set<ItemType> children;
 
     /**
      * Extension of the enum, adding additional functionality.
      */
     public static final EnumExtendable<ItemType> extension = new EnumExtendable<>(ItemType.class);
 
-    /* Constructs a root-level item-type. */
-    ItemType()
+    static // Tree currently only tracks parents. Reverse direction to only track children.
     {
-        this(null, EnumSet.noneOf(ItemType.class), -1);
-    }
-
-    /* Constructs a parent-level item-type. */
-    ItemType(final ItemType parent)
-    {
-        this(parent, EnumSet.noneOf(ItemType.class), -1);
-        parent.addType(this);
-    }
-
-    /* Constructs a child-level item-type. */
-    ItemType(final ItemType parent, final int maxSockets)
-    {
-        this(parent, null, maxSockets);
-        assert maxSockets > 0;
-        assert parent != null;
-        parent.addType(this, maxSockets);
-    }
-
-    /* Constructs a child-level item-type. */
-    ItemType(final int maxSockets)
-    {
-        this(null, null, maxSockets);
-        assert maxSockets > 0;
-    }
-
-    /* Shared constructor. */
-    ItemType(final ItemType parent, final EnumSet<ItemType> children, final int maxSockets)
-    {
-        this.parent = parent;
-        this.children = children;
-        this.maxSockets = maxSockets;
-        name = EnumExtendable.formalName(this);
-    }
-
-    /* Add item type as a child, recursively upwards. */
-    private void addType(final ItemType type)
-    {
-        assert type != null;
-        assert children != null;
-        if (children.add(type) && parent != null)
-            parent.addType(this);
-    }
-
-    /* Used when checking for an increase of sockets. */
-    private void addType(final ItemType type, final int maxSockets)
-    {
-        assert type != null;
-        assert maxSockets > 0;
-        assert children != null;
-        if (!children.add(type)) return;
-        if (this.maxSockets < maxSockets)
+        /* Setup all parental relationships -- EnumMap is extremely low overhead. */
+        final EnumMap<ItemType, ItemType> parentMap = new EnumMap<>(ItemType.class);
+        final EnumMap<ItemType, Set<ItemType>> childrenMap = new EnumMap<>(ItemType.class);
+        for (final ItemType child : extension.values())
         {
-            /* Inform parent to check max sockets. */
-            this.maxSockets = maxSockets;
-            parent.addType(this, maxSockets);
+            if (child.children == null) continue;
+            final ItemType parent = child.children.iterator().next(); // constructor guarantees safety.
+            parentMap.put(child, parent); // track parent so we don't need to use iterator anymore.
+            Set<ItemType> children = childrenMap.get(parent);
+            if (children == null)
+            {
+                children = EnumSet.of(child);
+                childrenMap.put(parent, children);
+            }
+            else children.add(child);
         }
-        else if (parent != null)
-            parent.addType(this);
+
+        /* Add all distant ancestors to each parent into their children collection. */
+        for (final Map.Entry<ItemType, ItemType> itEntry : parentMap.entrySet())
+        {
+            ItemType child = itEntry.getValue(), parent = parentMap.get(child);
+            parent.sockets = Math.max(parent.sockets, itEntry.getKey().sockets);
+
+            while (parent != null)
+            {
+                /* It shouldn't be possible for either of these calls to fail. */
+                childrenMap.get(parent).addAll(childrenMap.get(child));
+                parent.sockets = Math.max(parent.sockets, child.sockets);
+                child = parent; parent = parentMap.get(parent); // Iterate upwards.
+            }
+        }
+
+        /* Ensure all children all read-only. */
+        childrenMap.forEach((key, value) -> key.children = Collections.unmodifiableSet(value));
+    }
+
+    /* Constructs a root-level item-type. */
+    ItemType() { this(null, -1); }
+    ItemType(final ItemType parent) { this(parent, -1); }
+    ItemType(final int sockets) { this(null, sockets); }
+
+    ItemType(final ItemType parent, final int sockets)
+    {
+        name = EnumExtendable.formalName(this);
+        this.sockets = sockets;
+        if (parent != null) // Temporarily save parent reference without having an instance variable.
+            children = Collections.singletonMap(parent, null).keySet();
     }
 
     /**
@@ -134,7 +118,7 @@ public enum ItemType
      */
     public Set<ItemType> getChildren()
     {
-        return children != null ? Collections.unmodifiableSet(children) : null;
+        return children;
     }
 
     /**
@@ -148,9 +132,9 @@ public enum ItemType
     /**
      * @return Maximum sockets bases the item type can have.
      */
-    public int getMaxSockets()
+    public int getSockets()
     {
-        return maxSockets;
+        return sockets;
     }
 
     /**

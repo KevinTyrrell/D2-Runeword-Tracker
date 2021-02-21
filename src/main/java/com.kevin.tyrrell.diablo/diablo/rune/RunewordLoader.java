@@ -79,6 +79,7 @@ public class RunewordLoader implements Queryable<Runeword>
         final Stream<Rune> runes = ((Stream<Object>)jsonRuneArray.stream())
                 .map(obj -> Rune.extension.fromOrdinal(toIntExact((Long)obj)));
         final String description = (String)jsonRW.get("description");
+        System.out.println("Creating: " + name);
         return new Runeword(name, level, description, types, runes);
     }
 

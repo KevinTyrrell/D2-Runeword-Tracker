@@ -20,9 +20,11 @@ package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -56,8 +58,8 @@ public class Runeword implements ReadOnlyRuneMap
         this.name = requireNonNull(name);
         this.level = level;
         this.description = requireNonNull(description);
-        this.types = null;
-
+        this.types = types.flatMap(ItemType::stream)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(ItemType.class)));
         // Iterate through runes and grab the word, sockets, and rune counts.
         final AtomicInteger requiredSockets = new AtomicInteger();
         final StringBuilder builder = new StringBuilder();

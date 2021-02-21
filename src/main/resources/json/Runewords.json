@@ -360,7 +360,7 @@
     {
       "name": "Dragon",
       "level": 61,
-      "bases": ["armor, shield"],
+      "bases": ["armor", "shield"],
       "runes": [28, 27, 11],
       "description": "20% Chance to Cast Level 18 Venom When Struck\n12% Chance To Cast Level 15 Hydra On Striking\nLevel 14 Holy Fire Aura When Equipped\n+360 Defense\n+230 Defense Vs. Missile\n+3-5 To All Attributes\n+(0.375*Clvl) To Strength\n+5% To Maximum Lightning Resist\nDamage Reduced by 7\n====== Armor ======\nIncrease Maximum Mana 5%\n====== Shields ======\n+50 To Mana"
     },

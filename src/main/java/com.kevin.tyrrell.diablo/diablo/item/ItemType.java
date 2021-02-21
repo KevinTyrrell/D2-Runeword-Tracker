@@ -133,7 +133,7 @@ public enum ItemType
      */
     public Stream<ItemType> stream()
     {
-        return Stream.concat(Stream.of(this), children.stream());
+        return children != null ? Stream.concat(Stream.of(this), children.stream()) : Stream.of(this);
     }
 
     /**

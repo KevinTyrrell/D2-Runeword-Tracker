@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import static java.lang.Math.toIntExact;
 
 /**
- * Defines an area where Runewords are loaded, stored, and sorted.
+ * Defines an simple class where Runewords are loaded from the storage medium.
  *
  * @since 3.0
  */
@@ -29,6 +29,11 @@ public class RunewordLoader implements Queryable<Runeword>
     /* Path to Runewords JSON file. */
     private static final String JSON_PATH = "src/main/resources/json/Runewords.json";
 
+    /**
+     * Instantiates a runeword loader instance.
+     *
+     * Upon creation, loads Runewords from the storage medium.
+     */
     public RunewordLoader()
     {
         stringMap = Queryable.createStringMap(
@@ -67,7 +72,7 @@ public class RunewordLoader implements Queryable<Runeword>
 
     /* Loads a Runeword from its JSON string. */
     @SuppressWarnings("unchecked")
-    private Runeword loadRuneword(final JSONObject jsonRW)
+    private static Runeword loadRuneword(final JSONObject jsonRW)
     {
         assert jsonRW != null;
         final String name = (String)jsonRW.get("name");
@@ -79,7 +84,6 @@ public class RunewordLoader implements Queryable<Runeword>
         final Stream<Rune> runes = ((Stream<Object>)jsonRuneArray.stream())
                 .map(obj -> Rune.extension.fromOrdinal(toIntExact((Long)obj)));
         final String description = (String)jsonRW.get("description");
-        System.out.println("Creating: " + name);
         return new Runeword(name, level, description, types, runes);
     }
 

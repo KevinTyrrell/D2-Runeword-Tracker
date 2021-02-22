@@ -1,6 +1,7 @@
 package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.runeword.RunewordLoader;
 import org.junit.Test;
 
 import java.util.Arrays;

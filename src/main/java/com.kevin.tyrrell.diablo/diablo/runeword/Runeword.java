@@ -16,9 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevin.tyrrell.diablo.diablo.rune;
+package com.kevin.tyrrell.diablo.diablo.runeword;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.rune.ReadOnlyRuneMap;
+import com.kevin.tyrrell.diablo.diablo.rune.Rune;
+import com.kevin.tyrrell.diablo.diablo.rune.RuneMap;
 
 import java.util.EnumSet;
 import java.util.Map;

@@ -1,6 +1,7 @@
-package com.kevin.tyrrell.diablo.diablo.rune;
+package com.kevin.tyrrell.diablo.diablo.runeword;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.rune.Rune;
 import com.kevin.tyrrell.diablo.util.Queryable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

@@ -75,7 +75,7 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
      * @param value Value to be parsed.
      * @return Key used for enum value lookups by string.
      */
-    String stringMapKeyer(final T value)
+    protected String stringMapKeyer(final T value)
     {
         assert value != null;
         return value.toString().toLowerCase();

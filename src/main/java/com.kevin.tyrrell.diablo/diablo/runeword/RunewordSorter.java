@@ -6,6 +6,7 @@ import com.kevin.tyrrell.diablo.util.EnumExtendable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -44,13 +45,13 @@ public class RunewordSorter
     }
 
     /**
-     * Sorts the list of runewords based on the currently selected sort.
+     * Sorts a subset of runewords by the current sort setting.
      *
      * @param runewords Runewords to be sorted.
      */
-    public void sort(final List<Runeword> runewords)
+    public Stream<Runeword> sort(final Stream<Runeword> runewords)
     {
-        requireNonNull(runewords).sort(comparatorMap.get(currentSort));
+        return requireNonNull(runewords).sorted(comparatorMap.get(currentSort));
     }
 
     /**

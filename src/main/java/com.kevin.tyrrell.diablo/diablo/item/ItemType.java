@@ -33,7 +33,7 @@ public enum ItemType
     WEAPON,
     MELEE(WEAPON),
     MISSILE(WEAPON),
-    SHIELD,
+    SHIELD(4),
     AURIC(SHIELD, 4),
     AXE(MELEE, 6),
     ARMOR(4),
@@ -76,10 +76,12 @@ public enum ItemType
             Set<ItemType> children = childrenMap.get(parent);
             if (children == null)
             {
-                children = EnumSet.of(child);
+                children = EnumSet.noneOf(ItemType.class);
                 childrenMap.put(parent, children);
             }
-            else children.add(child);
+
+            /* Reject children that are containers. */
+            if (!child.isContainer()) children.add(child);
         }
         parentMap.keySet().forEach(k -> k.children = null); // Bereave all parents.
 
@@ -91,9 +93,12 @@ public enum ItemType
 
             while (parent != null)
             {
-                /* It shouldn't be possible for either of these calls to fail. */
-                childrenMap.get(parent).addAll(childrenMap.get(child));
-                parent.sockets = Math.max(parent.sockets, child.sockets);
+                /* It shouldn't be possible for the map calls to fail. */
+                final Set<ItemType> children = childrenMap.get(parent);
+                /* Avoid adding any of the container types. */
+                childrenMap.get(child).stream()
+                        .filter(type -> !type.isContainer())
+                        .forEach(children::add);
                 child = parent; parent = parentMap.get(parent); // Iterate upwards.
             }
         }
@@ -134,6 +139,16 @@ public enum ItemType
     public Stream<ItemType> stream()
     {
         return children != null ? Stream.concat(Stream.of(this), children.stream()) : Stream.of(this);
+    }
+
+    /**
+     * Indicates whether this item type is a general container of item types.
+     *
+     * @return true if the item type is a container item type.
+     */
+    public boolean isContainer()
+    {
+        return sockets < 0;
     }
 
     /**

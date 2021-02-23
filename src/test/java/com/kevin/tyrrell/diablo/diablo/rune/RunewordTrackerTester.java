@@ -33,6 +33,15 @@ public class RunewordTrackerTester
         assertEquals(a, b);
     }
 
+    @Test public void itemTypeTest2()
+    {
+        assertFalse(WEAPON.getChildren().contains(MELEE));
+        assertFalse(WEAPON.getChildren().contains(MISSILE));
+        assertTrue(WEAPON.getChildren().contains(AXE));
+        assertTrue(SHIELD.getChildren().contains(AURIC));
+        assertFalse(MELEE.getChildren().contains(MELEE));
+    }
+
     @Test public void runewordLoaderTest1()
     {
         RunewordLoader loader = new RunewordLoader();

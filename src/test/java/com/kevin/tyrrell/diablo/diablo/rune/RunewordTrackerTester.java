@@ -30,6 +30,7 @@ public class RunewordTrackerTester
                 .flatMap(t ->
                         t.getChildren() == null ? Stream.of(t) : t.getChildren().stream())
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(ItemType.class)));
+        final List<ItemType> values = extension.values();
         assertEquals(a, b);
     }
 

@@ -81,7 +81,7 @@ public enum ItemType
             }
 
             /* Reject children that are containers. */
-            if (!child.isContainer()) children.add(child);
+            if (child.isConcrete()) children.add(child);
         }
         parentMap.keySet().forEach(k -> k.children = null); // Bereave all parents.
 
@@ -97,7 +97,7 @@ public enum ItemType
                 final Set<ItemType> children = childrenMap.get(parent);
                 /* Avoid adding any of the container types. */
                 childrenMap.get(child).stream()
-                        .filter(type -> !type.isContainer())
+                        .filter(ItemType::isConcrete)
                         .forEach(children::add);
                 child = parent; parent = parentMap.get(parent); // Iterate upwards.
             }
@@ -138,17 +138,19 @@ public enum ItemType
      */
     public Stream<ItemType> stream()
     {
-        return children != null ? Stream.concat(Stream.of(this), children.stream()) : Stream.of(this);
+        if (children == null) return Stream.of(this);
+        if (!isConcrete()) return children.stream();
+        return Stream.concat(children.stream(), Stream.of(this));
     }
 
     /**
-     * Indicates whether this item type is a general container of item types.
+     * Indicates whether this item type is a not a container of item types.
      *
-     * @return true if the item type is a container item type.
+     * @return true if the item type is not an item type container.
      */
-    public boolean isContainer()
+    public boolean isConcrete()
     {
-        return sockets < 0;
+        return sockets >= 0;
     }
 
     /**

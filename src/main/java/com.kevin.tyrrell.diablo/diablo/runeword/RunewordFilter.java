@@ -1,7 +1,6 @@
 package com.kevin.tyrrell.diablo.diablo.runeword;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
-import com.kevin.tyrrell.diablo.diablo.rune.ReadOnlyRuneMap;
 import com.kevin.tyrrell.diablo.util.CachedValue;
 import com.kevin.tyrrell.diablo.util.Saveable;
 
@@ -19,39 +18,46 @@ import static java.util.Objects.requireNonNull;
  */
 public final class RunewordFilter implements Saveable
 {
-    /* Runes in which the user currently owns. */
-    private final ReadOnlyRuneMap userRunes;
-
     private final CachedValue<Stream<Runeword>> watchedWords;
     /* Item types in which the user wishes to ignore. */
-    private final Set<ItemType> ignoredTypes = EnumSet.noneOf(ItemType.class);
+    private final Set<ItemType> filteredTypes = EnumSet.noneOf(ItemType.class), filteredTypesRO;
     /* Runewords in which the user wishes to ignore. */
-    private final Set<Runeword> ignoredWords = new HashSet<>();
+    private final Set<Runeword> filteredWords = new HashSet<>(), filteredWordsRO;
 
     /**
      * Constructs a runeword filter instance.
      *
      * @param runewords All possible runewords.
      */
-    public RunewordFilter(final Collection<Runeword> runewords, final ReadOnlyRuneMap userRunes)
+    public RunewordFilter(final Collection<Runeword> runewords)
     {
-        this.userRunes = requireNonNull(userRunes);
-        watchedWords = null;
+        watchedWords = new CachedValue<>()
+        {
+            @Override protected Stream<Runeword> recalculate()
+            {
+                return evaluateFilters(runewords);
+            }
+        };
+
+        filteredTypesRO = Collections.unmodifiableSet(filteredTypes);
+        filteredWordsRO = Collections.unmodifiableSet(filteredWords);
     }
 
     /**
      * Filter or restore a specific item type.
      *
      * Lazy evaluation - Only filters the runewords on demand.
-     * Multiple calls may be needed for a single item type,
-     * so streaming all children of an item type is advised.
+     * Item type parameter must be concrete.
      *
-     * @param type Type to filter or restore.
+     * @param type Type to filter or restorew.
      * @return true if the item type is filtered, false if restored.
+     * @see ItemType#isConcrete()
      */
     public boolean filter(final ItemType type)
     {
-        return filter(ignoredTypes, type);
+        if (!requireNonNull(type).isConcrete())
+            throw new IllegalArgumentException("Item type parameter must be concrete.");
+        return filter(filteredTypes, type);
     }
 
     /**
@@ -65,7 +71,7 @@ public final class RunewordFilter implements Saveable
      */
     public boolean filter(final Runeword runeword)
     {
-        return filter(ignoredWords, runeword);
+        return filter(filteredWords, runeword);
     }
 
     /* Helper method to avoid repeated code. */
@@ -90,13 +96,29 @@ public final class RunewordFilter implements Saveable
         return watchedWords.get();
     }
 
+    /**
+     * @return Read-only set of item types being filtered.
+     */
+    public Set<ItemType> getFilteredTypes()
+    {
+        return filteredTypesRO;
+    }
+
+    /**
+     * @return Read-only set of runewords being filtered.
+     */
+    public Set<Runeword> getFilteredWords()
+    {
+        return filteredWordsRO;
+    }
+
     private Stream<Runeword> evaluateFilters(final Collection<Runeword> runewords)
     {
         assert runewords != null;
         assert !runewords.isEmpty();
-//        runewords.stream()
-//                .filter(rw ->
-        return null;
+        return runewords.stream()
+                .filter(rw -> !filteredWords.contains(rw))
+                .filter(rw -> !filteredTypes.containsAll(rw.getTypes()));
     }
 
     private final AtomicBoolean unsavedChanges = new AtomicBoolean();

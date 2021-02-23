@@ -74,6 +74,8 @@ public class Runeword implements ReadOnlyRuneMap
                 }));
         this.requiredSockets = requiredSockets.get();
         word = builder.toString();
+        /* Runeword names are guaranteed to be unique. */
+        hashCode = name.hashCode();
     }
 
     /**
@@ -143,5 +145,12 @@ public class Runeword implements ReadOnlyRuneMap
     public Set<ItemType> getTypes()
     {
         return types;
+    }
+
+    /* Cache hash code for faster lookups. */
+    final int hashCode;
+    @Override public int hashCode()
+    {
+        return hashCode;
     }
 }

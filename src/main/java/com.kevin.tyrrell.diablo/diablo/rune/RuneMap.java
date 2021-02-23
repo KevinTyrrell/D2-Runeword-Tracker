@@ -1,11 +1,12 @@
 package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.util.CachedValue;
+import com.kevin.tyrrell.diablo.util.Saveable;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,7 +18,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-public class RuneMap implements ReadOnlyRuneMap, Serializable
+public class RuneMap implements ReadOnlyRuneMap, Saveable
 {
     private final Map<Rune, Integer> runeCount;
     private transient final CachedValue<Map<Rune, Integer>> readOnlyRC;
@@ -71,7 +72,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
     public void moveRunes(final Rune key, final int diff)
     {
         runeCount.merge(requireNonNull(key), diff, RuneMap::runeRemapper);
-        appraisal.invalidate();
+        modifyFlags();
     }
 
     /**
@@ -84,7 +85,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
     {
         if (num <= 0) throw new IllegalArgumentException("Number of runes must be positive.");
         runeCount.merge(requireNonNull(key), num, RuneMap::runeAddRemapper);
-        appraisal.invalidate();
+        modifyFlags();
     }
 
     /**
@@ -97,7 +98,7 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
     {
         if (num <= 0) throw new IllegalArgumentException("Number of runes must be positive.");
         runeCount.merge(requireNonNull(key), num, RuneMap::runeTossRemapper);
-        appraisal.invalidate();
+        modifyFlags();
     }
 
     /**
@@ -109,7 +110,14 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
     {
         requireNonNull(stream)
                 .forEach(r -> runeCount.merge(r, 1, RuneMap::runeRemapper));
+        modifyFlags();
+    }
+
+    /* Updates the necessary flags that the rune map has changed. */
+    private void modifyFlags()
+    {
         appraisal.invalidate();
+        flagUnsavedChanges();
     }
 
     /**
@@ -167,5 +175,22 @@ public class RuneMap implements ReadOnlyRuneMap, Serializable
         assert oldValue > 0;
         assert diff != null;
         return diff > 0 ? runeAddRemapper(oldValue, diff) : runeTossRemapper(oldValue, diff);
+    }
+
+    private final AtomicBoolean unsavedChanges = new AtomicBoolean();
+
+    /**
+     * Flag provided by the inheriting class which controls
+     * whether or not the object has unsaved changes present.
+     * The flag itself is completely managed by Saveable.
+     * <p>
+     * This method should only be called by the Saveable class.
+     * For flagging unsaved changes, call `flagUnsavedChanges()`.
+     *
+     * @return AtomicBoolean instance variable of the inheriting class.
+     */
+    @Override public AtomicBoolean getUnsavedChanges()
+    {
+        return unsavedChanges;
     }
 }

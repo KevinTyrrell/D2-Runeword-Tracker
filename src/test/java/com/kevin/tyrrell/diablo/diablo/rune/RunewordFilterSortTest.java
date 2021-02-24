@@ -51,7 +51,7 @@ public class RunewordFilterSortTest
 
     public void sort()
     {
-        sorted =  sorter.sort(filter.getRunewords())
+        sorted = sorter.sort(filter.getRunewords())
                 .collect(Collectors.toList());
     }
 
@@ -93,5 +93,52 @@ public class RunewordFilterSortTest
         sorter.sortBy(RunewordSorter.Sort.BY_PROGRESS);
         sort();
         assertEquals(loader.fromString("enigma"), sorted.get(sorted.size() - 1));
+    }
+
+    @Test public void runewordFilterSortTest5()
+    {
+        sort();
+        assertEquals(0, sorted.size());
+    }
+
+    @Test public void runewordFilterSortTest6()
+    {
+        runes.addRunes(Stream.of(SOL, UM));
+        final double p1 = runes.progressTowards(loader.fromString("crescent_moon"));
+        assertTrue(p1 >= 0.95f);
+        runes.addRunes(UM, 1);
+        final double p2 = runes.progressTowards(loader.fromString("crescent_moon"));
+        assertEquals(p1, p2, 0.0);
+
+        sort();
+        assertTrue(sorted.size() < loader.stringMap().size());
+        filter.setProgressThreshold(0.98f);
+        sort();
+        assertEquals(1, sorted.size());
+        assertEquals(loader.fromString("bone"), sorted.get(0));
+    }
+
+    @Test public void runewordFilterSortTest7()
+    {
+        runes.addRunes(Stream.of(ORT, RAL, TAL, UM));
+        sorter.sortBy(BY_NAME);
+        sort();
+        assertEquals(loader.fromString("ancients_pledge"), sorted.get(0));
+        sorter.sortBy(BY_RARITY);
+        sort();
+        assertEquals(loader.fromString("chaos"), sorted.get(sorted.size() - 1));
+        sorter.sortBy(BY_PROGRESS);
+        sort();
+        assertEquals(loader.fromString("ancients_pledge"), sorted.get(sorted.size() - 1));
+        sorter.sortBy(BY_LEVEL);
+        sort();
+        assertEquals(loader.fromString("stealth"), sorted.get(0));
+        sorter.sortBy(BY_SOCKETS);
+        sort();
+        assertEquals(loader.fromString("stealth"), sorted.get(0));
+        assertEquals(loader.fromString("kingslayer"), sorted.get(sorted.size() - 1));
+        filter.setProgressThreshold(0);
+        sort();
+        assertEquals(loader.fromString("breath_of_the_dying"), sorted.get(sorted.size() - 1));
     }
 }

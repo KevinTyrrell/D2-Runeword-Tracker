@@ -44,6 +44,7 @@ import static com.kevin.tyrrell.diablo.diablo.rune.Runeword.COMPLETION_THRESHOLD
  * TODO: Change com.kevin.tyrrell.diablo package, restructure.
  * TODO: Determine future of Utilities package.
  * TODO: Completely overhaul Tracker class.
+ * TODO: Localization via JSON.
  *
  * @since 2.0
  */

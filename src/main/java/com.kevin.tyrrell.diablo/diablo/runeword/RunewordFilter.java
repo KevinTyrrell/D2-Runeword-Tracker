@@ -20,7 +20,6 @@ package com.kevin.tyrrell.diablo.diablo.runeword;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
 import com.kevin.tyrrell.diablo.diablo.rune.ReadOnlyRuneMap;
-import com.kevin.tyrrell.diablo.util.CachedValue;
 import com.kevin.tyrrell.diablo.util.Saveable;
 
 import java.util.*;
@@ -37,7 +36,8 @@ import static java.util.Objects.requireNonNull;
  */
 public final class RunewordFilter implements Saveable
 {
-    private final CachedValue<Stream<Runeword>> watchedWords;
+    /* Reference to container of runewords. */
+    private final Collection<Runeword> runewords;
     /* Item types in which the user wishes to ignore. */
     private final Set<ItemType> filteredTypes = EnumSet.noneOf(ItemType.class), filteredTypesRO;
     /* Runewords in which the user wishes to ignore. */
@@ -51,22 +51,14 @@ public final class RunewordFilter implements Saveable
     private static final float DEFAULT_COMPLETION_THRESHOLD = 0.15f;
 
     /**
-     * Constructs a runeword filter instance.
-     *
-     * @param runewords All possible runewords.
+     * @param runewords Collection of all known runewords.
      */
     public RunewordFilter(final Collection<Runeword> runewords, final ReadOnlyRuneMap runes)
     {
-        watchedWords = new CachedValue<>()
-        {
-            @Override protected Stream<Runeword> recalculate()
-            {
-                return evaluateFilters(runewords);
-            }
-        };
+        this.runewords = requireNonNull(runewords);
+        this.runes = requireNonNull(runes);
         filteredTypesRO = Collections.unmodifiableSet(filteredTypes);
         filteredWordsRO = Collections.unmodifiableSet(filteredWords);
-        this.runes = requireNonNull(runes);
     }
 
     /**
@@ -107,18 +99,22 @@ public final class RunewordFilter implements Saveable
             rval = container.remove(value);
         else rval = container.add(value);
         flagUnsavedChanges();
-        watchedWords.invalidate();
         return rval;
     }
 
     /**
      * Evaluates the filters and outputs the current subset of non-filtered runewords.
      *
+     * Due to needing to check player rune progress, it is not possible to cache this operation.
+     *
      * @return Stream of non-filtered runewords.
      */
     public Stream<Runeword> getRunewords()
     {
-        return watchedWords.get();
+        return runewords.stream()
+                .filter(rw -> !filteredWords.contains(rw))
+                .filter(rw -> runes.progressTowards(rw) >= progressThreshold)
+                .filter(rw -> !filteredTypes.containsAll(rw.getTypes()));
     }
 
     /**
@@ -153,16 +149,6 @@ public final class RunewordFilter implements Saveable
         if (progressThreshold < 0.0f || progressThreshold > 1.0f)
             throw new IllegalArgumentException("Progress threshold must of the domain [0, 1].");
         this.progressThreshold = progressThreshold;
-    }
-
-    /* Peforms the filter operations to generate a subset of Runewords. */
-    private Stream<Runeword> evaluateFilters(final Collection<Runeword> runewords)
-    {
-        assert runewords != null;
-        assert !runewords.isEmpty();
-        return runewords.stream()
-                .filter(rw -> !filteredWords.contains(rw))
-                .filter(rw -> !filteredTypes.containsAll(rw.getTypes()));
     }
 
     private final AtomicBoolean unsavedChanges = new AtomicBoolean();

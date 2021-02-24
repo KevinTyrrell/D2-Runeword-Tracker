@@ -1,6 +1,25 @@
+/*
+ * Application which tracks Runeword progress in the video game Diablo 2.
+ * Copyright (C) 2021  Kevin Tyrrell
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.kevin.tyrrell.diablo.diablo.runeword;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.rune.ReadOnlyRuneMap;
 import com.kevin.tyrrell.diablo.util.CachedValue;
 import com.kevin.tyrrell.diablo.util.Saveable;
 
@@ -23,15 +42,20 @@ public final class RunewordFilter implements Saveable
     private final Set<ItemType> filteredTypes = EnumSet.noneOf(ItemType.class), filteredTypesRO;
     /* Runewords in which the user wishes to ignore. */
     private final Set<Runeword> filteredWords = new HashSet<>(), filteredWordsRO;
+    /* Runes in which the player owns. */
+    private final ReadOnlyRuneMap runes;
 
-    // TODO: Filter based on completion %.
+    /* Minimum completion for runewords to avoid being filtered. */
+    private float progressThreshold = DEFAULT_COMPLETION_THRESHOLD;
+
+    private static final float DEFAULT_COMPLETION_THRESHOLD = 0.15f;
 
     /**
      * Constructs a runeword filter instance.
      *
      * @param runewords All possible runewords.
      */
-    public RunewordFilter(final Collection<Runeword> runewords)
+    public RunewordFilter(final Collection<Runeword> runewords, final ReadOnlyRuneMap runes)
     {
         watchedWords = new CachedValue<>()
         {
@@ -40,18 +64,18 @@ public final class RunewordFilter implements Saveable
                 return evaluateFilters(runewords);
             }
         };
-
         filteredTypesRO = Collections.unmodifiableSet(filteredTypes);
         filteredWordsRO = Collections.unmodifiableSet(filteredWords);
+        this.runes = requireNonNull(runes);
     }
 
     /**
      * Filter or restore a specific item type.
      *
      * Lazy evaluation - Only filters the runewords on demand.
-     * Item type parameter must be concrete.
+     * Item type parameter must be a concrete item type.
      *
-     * @param type Type to filter or restorew.
+     * @param type Type to filter or restore.
      * @return true if the item type is filtered, false if restored.
      * @see ItemType#isConcrete()
      */
@@ -66,7 +90,6 @@ public final class RunewordFilter implements Saveable
      * Filter or restore a specific runeword.
      *
      * Lazy evaluation - Only filters the runewords on demand.
-     * TODO: Parent item types may cause problems here.
      *
      * @param runeword Runeword to filter or restore.
      * @return true if the item type is filtered, false if restored.
@@ -114,6 +137,25 @@ public final class RunewordFilter implements Saveable
         return filteredWordsRO;
     }
 
+    /**
+     * @return Progress threshold from [0, 1] for runewords to avoid being filtered.
+     */
+    public float getProgressThreshold()
+    {
+        return progressThreshold;
+    }
+
+    /**
+     * @param progressThreshold Progress threshold from [0, 1] for runewords to avoid being filtered.
+     */
+    public void setProgressThreshold(final float progressThreshold)
+    {
+        if (progressThreshold < 0.0f || progressThreshold > 1.0f)
+            throw new IllegalArgumentException("Progress threshold must of the domain [0, 1].");
+        this.progressThreshold = progressThreshold;
+    }
+
+    /* Peforms the filter operations to generate a subset of Runewords. */
     private Stream<Runeword> evaluateFilters(final Collection<Runeword> runewords)
     {
         assert runewords != null;

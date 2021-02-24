@@ -1,84 +1,97 @@
+/*
+ * Application which tracks Runeword progress in the video game Diablo 2.
+ * Copyright (C) 2021  Kevin Tyrrell
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.kevin.tyrrell.diablo.diablo.rune;
 
-import com.kevin.tyrrell.diablo.diablo.item.ItemType;
 import com.kevin.tyrrell.diablo.diablo.runeword.Runeword;
 import com.kevin.tyrrell.diablo.diablo.runeword.RunewordFilter;
 import com.kevin.tyrrell.diablo.diablo.runeword.RunewordLoader;
 import com.kevin.tyrrell.diablo.diablo.runeword.RunewordSorter;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.logging.Filter;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static com.kevin.tyrrell.diablo.diablo.item.ItemType.*;
 import static com.kevin.tyrrell.diablo.diablo.rune.Rune.*;
+import static com.kevin.tyrrell.diablo.diablo.rune.Rune.BER;
+import static com.kevin.tyrrell.diablo.diablo.runeword.RunewordSorter.Sort.*;
+import static org.junit.Assert.*;
 
 /**
- * JUnit Testing Class
+ * JUnit testing class.
  *
  * @since 3.0
  */
-public class RunewordTrackerTester
+public class RunewordFilterSortTest
 {
-    @Test public void itemTypeTest1()
-    {
-        final EnumSet<ItemType> a = EnumSet.of(AXE, CLUB, CLAW, HAMMER, MACE, POLEARM, SCEPTER, STAFF, SWORD, WAND);
+    private RuneMap runes;
+    private RunewordLoader loader;
+    private RunewordFilter filter;
+    private RunewordSorter sorter;
+    private List<Runeword> sorted;
 
-        final List<ItemType> types = Collections.singletonList(MELEE);
-        final EnumSet<ItemType> b = types.stream()
-                .flatMap(t ->
-                        t.getChildren() == null ? Stream.of(t) : t.getChildren().stream())
-                .collect(Collectors.toCollection(() -> EnumSet.noneOf(ItemType.class)));
-        assertEquals(a, b);
+    public void sort()
+    {
+        sorted =  sorter.sort(filter.getRunewords())
+                .collect(Collectors.toList());
     }
 
-    @Test public void itemTypeTest2()
+    @Before @Test public void setup()
     {
-        assertFalse(WEAPON.getChildren().contains(MELEE));
-        assertFalse(WEAPON.getChildren().contains(MISSILE));
-        assertTrue(WEAPON.getChildren().contains(AXE));
-        assertTrue(SHIELD.getChildren().contains(AURIC));
-        assertFalse(MELEE.getChildren().contains(MELEE));
+        runes = new RuneMap();
+        loader = new RunewordLoader();
+        filter = new RunewordFilter(new ArrayList<>(loader.stringMap().values()), runes);
+        sorter = new RunewordSorter(runes);
     }
 
-    @Test public void runewordLoaderTest1()
+    @Test public void runewordFilterSortTest1()
     {
-        RunewordLoader loader = new RunewordLoader();
-        assertTrue(true);
-    }
-
-    @Test public void runewordLoaderTest2()
-    {
-        final RunewordLoader loader = new RunewordLoader();
         final String[] rwNames = { "ancients_pledge", "black", "fury", "holy_thunder", "honor", "kings_grace", "leaf", "lionheart", "lore", "malice", "melody", "memory", "nadir", "radiance", "rhyme", "silence", "smoke", "stealth", "steel", "strength", "venom", "wealth", "white", "zephyr", "beast", "bramble", "breath_of_the_dying", "call_to_arms", "chains_of_honor", "chaos", "crescent_moon", "delirium", "doom", "duress", "enigma", "eternity", "exile", "famine", "gloom", "hand_of_justice", "heart_of_the_oak", "kingslayer", "passion", "prudence", "sanctuary", "splendor", "stone", "wind", "brand", "death", "destruction", "dragon", "dream", "edge", "faith", "fortitude", "grief", "harmony", "ice", "infinity", "insight", "last_wish", "lawbringer", "oath", "obedience", "phoenix", "pride", "rift", "spirit", "voice_of_reason", "wrath", "bone", "enlightenment", "myth", "peace", "principle", "rain", "treachery" };
         assertEquals(78, rwNames.length); // there are 78 runewords.
-        Arrays.stream(rwNames).forEach(name -> {
+        Arrays.stream(rwNames).forEach(name ->
+        {
             System.out.println("Attempting to load Runeword: " + name);
             assertNotNull(loader.fromString(name));
         });
     }
 
-    @Test public void runewordFilterSortTest1()
+    @Test public void runewordFilterSortTest2()
     {
-        RuneMap runes = new RuneMap(Stream.of(JAH, ITH, BER));
-        RunewordLoader loader = new RunewordLoader();
+        runes.addRunes(Stream.of(JAH, ITH, BER));
         assertEquals(1.0, runes.progressTowards(loader.fromString("enigma")), 0.0);
-        runes = new RuneMap(Stream.of(ZOD));
+    }
+
+    @Test public void runewordFilterSortTest3()
+    {
+        runes.addRunes(ZOD, 1);
         assertTrue(runes.progressTowards(loader.fromString("breath_of_the_dying")) > 0.40);
         assertEquals(0.0, runes.progressTowards(loader.fromString("stealth")), 0.0);
+    }
 
-        runes = new RuneMap(Stream.of(JAH, JAH, BER, BER));
-        RunewordFilter filter = new RunewordFilter(loader.stringMap().values());
-        RunewordSorter sorter = new RunewordSorter(runes);
+    @Test public void runewordFilterSortTest4()
+    {
+        runes.addRunes(Stream.of(JAH, JAH, BER, BER));
         sorter.sortBy(RunewordSorter.Sort.BY_PROGRESS);
-        final List<Runeword> sorted = sorter.sort(filter.getRunewords())
-                .collect(Collectors.toList());
+        sort();
         assertEquals(loader.fromString("enigma"), sorted.get(sorted.size() - 1));
     }
 }

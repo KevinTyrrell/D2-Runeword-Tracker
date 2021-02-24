@@ -29,7 +29,6 @@ public final class D2RunewordTracker
 {
     public static void main(final String[] args)
     {
-        System.out.println("Hello, World!");
     }
 
     /**
@@ -46,7 +45,7 @@ public final class D2RunewordTracker
                 MINOR = 0,              /* Backwards compatible features implemented. */
                 PATCH = 0,              /* Backwards compatible bug fixes implemented. */
                 COMPILE_MONTH = 2,      /* Month of the date in which release was compiled. */
-                COMPILE_DAY = 15,       /* Day of the date in which release was compiled. */
+                COMPILE_DAY = 24,       /* Day of the date in which release was compiled. */
                 COMPILE_YEAR = 2021;    /* Year of the date in which release was compiled. */
 
         /* Version format for String representations. */

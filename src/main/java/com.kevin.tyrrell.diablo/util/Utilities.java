@@ -1,6 +1,6 @@
 /*
  * Application which tracks Runeword progress in the video game Diablo 2.
- * Copyright (C) 2018  Kevin Tyrrell
+ * Copyright (C) 2021  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ import java.util.stream.Stream;
  * Assortment of utility static methods.
  *
  * TODO: Reduce reliance on this class.
+ * TODO: Much of this class should be inside of Console class.
  *
  * @since 2.0
  */

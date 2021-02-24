@@ -33,11 +33,11 @@ Save files for Diablo 2 Runeword Tracker will be created in the directory the `j
 
 Once the program is open, you should begin adding the Runes you have in-game to the program. To add Runes, type the `add` command followed by a space separated list of Runes. In my game, I have an Ort, Tal, and Tir Rune, so I will type `add ort tal tir`. 
 
-![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/res/TutorialImg1.png "Adding Runes")
+![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/src/main/java/resources/TutorialImg1.png "Adding Runes")
 
 Based on what Runes you have, various Runewords will be displayed.
 
-![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/res/TutorialImg2.png "Runeword output")
+![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/src/main/java/resources/TutorialImg2.png "Runeword output")
 
 Ort, Tir, and Tal are all used for a lot of words, so I get a lot of results. Some Runewords are omitted because I don't have enough of its significant Runes for the program to consider it being worth tracking at the moment. Let's break down everything that's shown here:
 
@@ -63,17 +63,17 @@ Not every Runeword may be of interest to you. Or, perhaps you're a melee charact
 ignore steel bow nadir crossbow helm body_armor
 ```
 
-![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/res/TutorialImg3.png "Tossing and ignoring")
+![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/src/main/java/resources/TutorialImg3.png "Tossing and ignoring")
 
 To un-ignore a Runeword or item type, type `ignore` just like before and it will toggle the Runeword or item type back to being tracked. To erase all tracked item types or Runewords, you can also close the program, delete the `IgnoredTypes.ser` and `IgnoredWords.ser` files respectively, and re-start the program.
 
-![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/res/TutorialImg4.png "Completing Runewords")
+![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/src/main/java/resources/TutorialImg4.png "Completing Runewords")
 
 Adding a Ral Rune completes the Runeword called *Ancient's Pledge*. you can see the program indicating that I have `100.00%` completion of it. If I were to make the Runeword, I would then `toss ort ral tal`.
 
 The most sophisticated feature thus far is the **insignificant Runes** warning. The program will warn you of Runes that you own which are not contributing much (or at all) to a tracked Runeword. Here's an example:
 
-![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/res/TutorialImg5.png "Insignificant Runes")
+![Img](https://github.com/KevinTyrrell/D2-Runeword-Tracker/raw/master/src/main/java/resources/TutorialImg5.png "Insignificant Runes")
 
 Our Rune library currently consists of a Zod, Vex, Lum, and El rune. The program indicates that Lum and El do not contribute towards a tracked goal. Lum actually DOES contribute to a goal, specifically towards the Runeword Splendor (which we have 95% completed). However, I previously ignored the runeword Splendor, and thus Lum has no contribution to any Runeword we have listed above and should be sold. The El rune has a different scenario. It is contributing to the Runeword Breath of the Dying, but because El is commonly found, the program will indicate that it is not worth holding onto until we are closer to completing the Runeword. In this case, collecting a Hel rune removes the warning, since we are now close enough to completing Breath of the Dying to make holding onto an El Rune worth the hassle.
 

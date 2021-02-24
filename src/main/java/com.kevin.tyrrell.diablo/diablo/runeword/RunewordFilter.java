@@ -24,6 +24,8 @@ public final class RunewordFilter implements Saveable
     /* Runewords in which the user wishes to ignore. */
     private final Set<Runeword> filteredWords = new HashSet<>(), filteredWordsRO;
 
+    // TODO: Filter based on completion %.
+
     /**
      * Constructs a runeword filter instance.
      *

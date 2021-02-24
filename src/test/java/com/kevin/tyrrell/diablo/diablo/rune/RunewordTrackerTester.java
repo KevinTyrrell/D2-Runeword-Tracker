@@ -1,18 +1,23 @@
 package com.kevin.tyrrell.diablo.diablo.rune;
 
 import com.kevin.tyrrell.diablo.diablo.item.ItemType;
+import com.kevin.tyrrell.diablo.diablo.runeword.Runeword;
+import com.kevin.tyrrell.diablo.diablo.runeword.RunewordFilter;
 import com.kevin.tyrrell.diablo.diablo.runeword.RunewordLoader;
+import com.kevin.tyrrell.diablo.diablo.runeword.RunewordSorter;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.logging.Filter;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 import static com.kevin.tyrrell.diablo.diablo.item.ItemType.*;
+import static com.kevin.tyrrell.diablo.diablo.rune.Rune.*;
 
 /**
  * JUnit Testing Class
@@ -30,7 +35,6 @@ public class RunewordTrackerTester
                 .flatMap(t ->
                         t.getChildren() == null ? Stream.of(t) : t.getChildren().stream())
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(ItemType.class)));
-        final List<ItemType> values = extension.values();
         assertEquals(a, b);
     }
 
@@ -58,5 +62,23 @@ public class RunewordTrackerTester
             System.out.println("Attempting to load Runeword: " + name);
             assertNotNull(loader.fromString(name));
         });
+    }
+
+    @Test public void runewordFilterSortTest1()
+    {
+        RuneMap runes = new RuneMap(Stream.of(JAH, ITH, BER));
+        RunewordLoader loader = new RunewordLoader();
+        assertEquals(1.0, runes.progressTowards(loader.fromString("enigma")), 0.0);
+        runes = new RuneMap(Stream.of(ZOD));
+        assertTrue(runes.progressTowards(loader.fromString("breath_of_the_dying")) > 0.40);
+        assertEquals(0.0, runes.progressTowards(loader.fromString("stealth")), 0.0);
+
+        runes = new RuneMap(Stream.of(JAH, JAH, BER, BER));
+        RunewordFilter filter = new RunewordFilter(loader.stringMap().values());
+        RunewordSorter sorter = new RunewordSorter(runes);
+        sorter.sortBy(RunewordSorter.Sort.BY_PROGRESS);
+        final List<Runeword> sorted = sorter.sort(filter.getRunewords())
+                .collect(Collectors.toList());
+        assertEquals(loader.fromString("enigma"), sorted.get(sorted.size() - 1));
     }
 }

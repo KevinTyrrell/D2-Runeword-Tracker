@@ -37,7 +37,7 @@ public class RunewordSorter
         comparatorMap.put(Sort.BY_PROGRESS, (rw1, rw2) ->
         {
             /* This is semi-cached, as each rune map caches its appraisal. */
-            final int cmp = Double.compare(rw1.progressTowards(userRunes), rw2.progressTowards(userRunes));
+            final int cmp = Double.compare(userRunes.progressTowards(rw1), userRunes.progressTowards(rw2));
             /* Dive one layer deeper if comparison is equivalent. */
             if (cmp != 0 || Sort.BY_PROGRESS.nextLayer == null) return cmp;
             return Sort.BY_PROGRESS.nextLayer.cmp(rw1, rw2);

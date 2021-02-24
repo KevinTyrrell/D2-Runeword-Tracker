@@ -153,4 +153,12 @@ public class Runeword implements ReadOnlyRuneMap
     {
         return hashCode;
     }
+
+    /**
+     * @return String representation of the runeword.
+     */
+    @Override public String toString()
+    {
+        return name;
+    }
 }

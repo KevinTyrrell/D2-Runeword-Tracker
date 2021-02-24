@@ -23,8 +23,6 @@ package com.kevin.tyrrell.diablo.util;
  *
  * @since 3.0
  */
-public interface StateMachine<T>
+public interface FiniteState<T>
 {
-    // TODO: Implement state listener.
-    // https://stackoverflow.com/a/25581346
 }

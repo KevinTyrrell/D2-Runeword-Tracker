@@ -1,0 +1,80 @@
+{
+  "en": {
+    "splash": {
+      "title": "Diablo II Runeword Tracker v%s.%s.%s",
+      "description": "Kevin Tyrrell\nhttps://github.com/KevinTyrrell/D2-Runeword-Tracker\nCompiled On: %s"
+    },
+    "runes": {
+      "title": "RUNE COLLECTION",
+      "tiers": [ "High", "Mid", "Low" ]
+    },
+    "commands": {
+      "title": "COMMANDS",
+      "prompt": "Command: ",
+      "add": {
+        "command": "add",
+        "hint": "adds runes to your collection",
+        "example": "add tir ort3",
+        "ex": {
+          "dne": "Unrecognized Rune: %s"
+        }
+      },
+      "toss": {
+        "command": "toss",
+        "hint": "tosses runes from your collection",
+        "example": "toss amn2 el",
+        "ex": {
+          "dne": "Unrecognized Rune: %s",
+          "illegal": "Insufficient runes to toss: %s Rune"
+        }
+      },
+      "filter": {
+        "command": "filter",
+        "hint": "filters in/out runewords/item types",
+        "example": "filter axes ancients_pledge",
+        "ex": {
+          "dne": "Unrecognized Runeword or Item Type: %s"
+        }
+      },
+      "sort": {
+        "command": "sort",
+        "hint": "sorts results by column",
+        "example": "sort progress",
+        "sorts": {
+          "name": "name",
+          "rarity": "rarity",
+          "level": "level",
+          "sockets": "sockets",
+          "progress": "progress"
+        },
+        "ex": {
+          "dne": "Unrecognized Sort: %s"
+        }
+      },
+      "info": {
+        "command": "info",
+        "hint": "runeword name",
+        "example": "info breath_of_the_dying",
+        "ex": {
+          "dne": "Unrecognized Runeword: %s"
+        }
+      },
+      "threshold": {
+        "command": "threshold",
+        "hint": "%threshold progress to hide runewords",
+        "example": "threshold 25.0",
+        "ex": {
+          "invalid": "Invalid Threshold (must be of domain [0.0, 100]): %s"
+        }
+      },
+      "help": {
+        "command": "help",
+        "url": "https://github.com/KevinTyrrell/D2-Runeword-Tracker#general-use"
+      },
+      "quit": {
+        "command": "quit",
+        "hint": "exits runtime (program saves automatically)"
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 /*
- *     TODO: ...
+ *     Application which tracks Runeword progress in the video game Diablo 2.
  *     Copyright (C) 2021  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ package com.KevinTyrrell.diablo.runeword;
 
 import com.KevinTyrrell.diablo.item.ItemType;
 import com.KevinTyrrell.diablo.rune.Rune;
+import com.KevinTyrrell.util.JSONLoader;
 import com.KevinTyrrell.util.Queryable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -55,6 +56,8 @@ public class RunewordLoader implements Queryable<Runeword>
      */
     public RunewordLoader()
     {
+        final JSONObject jo = JSONLoader.parseJSON("Runewords");
+
         stringMap = Queryable.createStringMap(
                 loadRunewordJSON(), rw ->
                 {

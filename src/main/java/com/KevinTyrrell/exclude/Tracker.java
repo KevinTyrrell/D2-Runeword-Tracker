@@ -50,6 +50,7 @@ import static com.kevin.tyrrell.diablo.diablo.rune.Runeword.COMPLETION_THRESHOLD
  * TODO: Completely overhaul Tracker class.
  * TODO: Localization via JSON.
  * TODO: Overhaul README.md.
+ * TODO: Re-implement insignifcant runes feature.
  *
  * @since 2.0
  */

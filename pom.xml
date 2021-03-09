@@ -8,6 +8,7 @@
     <artifactId>D2-Runeword-Tracker</artifactId>
     <version>3.0.0</version>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>

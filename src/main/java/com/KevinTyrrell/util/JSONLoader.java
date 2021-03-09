@@ -91,6 +91,8 @@ public interface JSONLoader
             else throw new UnsupportedOperationException();
         }
 
+        if (!(current instanceof String))
+            throw new IllegalArgumentException("Inner JSON path was invalid: ".concat(path));
         return (String)current;
     }
 }

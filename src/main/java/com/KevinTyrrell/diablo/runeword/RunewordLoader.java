@@ -24,14 +24,8 @@ import com.KevinTyrrell.util.JSONLoader;
 import com.KevinTyrrell.util.Queryable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -46,9 +40,6 @@ public class RunewordLoader implements Queryable<Runeword>
 {
     private final Map<String, Runeword> stringMap;
 
-    /* Path to Runewords JSON file. */
-    private static final String JSON_PATH = "src/main/resources/json/Runewords.json";
-
     /**
      * Instantiates a runeword loader instance.
      *
@@ -56,40 +47,17 @@ public class RunewordLoader implements Queryable<Runeword>
      */
     public RunewordLoader()
     {
-        final JSONObject jo = JSONLoader.parseJSON("Runewords");
-
+        final JSONArray jo = (JSONArray)JSONLoader.parseJSON("Runewords");
+        assert jo != null;
         stringMap = Queryable.createStringMap(
-                loadRunewordJSON(), rw ->
+                /* IntStream is require here to avoid generic casting in a Stream#map call. */
+                IntStream.range(0, jo.size())
+                        .mapToObj(i -> loadRuneword((JSONObject)jo.get(i))), rw ->
                 {
                     final String rwlc = rw.getName().toLowerCase();
                     /* Remove symbols and spaces. Replace spaces with underscores. */
                     return rwlc.replace("'", "").replace(" ", "_");
                 });
-    }
-
-    /* Loads all Runewords from the JSON file. */
-    private Stream<Runeword> loadRunewordJSON()
-    {
-        final JSONParser parser = new JSONParser();
-        try (final FileReader reader = new FileReader(JSON_PATH))
-        {
-            final JSONObject obj = (JSONObject)parser.parse(reader);
-            final JSONArray jsonRWs = (JSONArray)obj.get("runewords");
-            return IntStream.range(0, jsonRWs.size())
-                    .mapToObj(i -> loadRuneword((JSONObject)jsonRWs.get(i)));
-        }
-        catch (final FileNotFoundException e)
-        {
-            e.printStackTrace();
-            throw new MissingResourceException(
-                    JSON_PATH, RunewordLoader.class.getSimpleName(), "Runeword JSON file is missing.");
-        }
-        catch (final IOException | ParseException e)
-        {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     /* Loads a Runeword from its JSON string. */

@@ -87,7 +87,20 @@ public interface JSONLoader
             if (current instanceof JSONObject)
                 current = ((JSONObject) current).get(s);
             else if (current instanceof JSONArray)
-                current = ((JSONArray) current).get(Integer.parseInt(s));
+            {
+                try
+                {
+                    final JSONArray jsa = (JSONArray)current;
+                    final int index = Integer.parseInt(s);
+                    if (index < 0 || index >= jsa.size())
+                        throw new IllegalArgumentException("JSON path index is out of bounds: ".concat(s));
+                    current = jsa.get(index);
+                }
+                catch (final NumberFormatException e)
+                {
+                    throw new IllegalArgumentException("JSON path index is invalid: ".concat(s));
+                }
+            }
             else throw new UnsupportedOperationException();
         }
 

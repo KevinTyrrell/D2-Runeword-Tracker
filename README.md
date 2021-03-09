@@ -20,11 +20,11 @@ Visit the **[Releases](https://github.com/KevinTyrrell/D2-Runeword-Tracker/relea
 
 ##### Windows
 
-Either double click the `D2-Runeword-Tracker.bat` file or open up a com.kevin.tyrrell.diablo.console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
+Either double click the `D2-Runeword-Tracker.bat` file or open up a com.kevintyrrell.tyrrell.diablo.console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
 
 ##### Linux / Mac
 
-Open a com.kevin.tyrrell.diablo.console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
+Open a com.kevintyrrell.tyrrell.diablo.console window in the directory you saved the release and type `java -jar D2-Runeword-Tracker.jar`.
 
 ----
 Save files for Diablo 2 Runeword Tracker will be created in the directory the `jar` is located.

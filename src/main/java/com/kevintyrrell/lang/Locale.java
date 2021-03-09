@@ -1,5 +1,5 @@
 /*
- *     Application which tracks Runeword progress in the video game Diablo 2.
+ *     TODO: ...
  *     Copyright (C) 2021  Kevin Tyrrell
  *
  *     This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
 
 package com.kevintyrrell.lang;
 
-import com.kevintyrrell.util.CachedValue;
-import com.kevintyrrell.util.JSONLoader;
+import com.kevintyrrell.model.util.CachedValue;
+import com.kevintyrrell.model.util.JSONLoader;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;

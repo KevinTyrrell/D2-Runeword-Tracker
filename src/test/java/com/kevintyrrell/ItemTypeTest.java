@@ -18,7 +18,7 @@
 
 package com.kevintyrrell;
 
-import com.kevintyrrell.diablo.item.ItemType;
+import com.kevintyrrell.model.diablo.item.ItemType;
 import org.junit.Test;
 
 import java.util.Collections;

@@ -16,12 +16,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevintyrrell.diablo.runeword;
+package com.kevintyrrell.model.diablo.runeword;
 
-import com.kevintyrrell.diablo.item.ItemType;
-import com.kevintyrrell.diablo.rune.Rune;
-import com.kevintyrrell.util.JSONLoader;
-import com.kevintyrrell.util.Queryable;
+import com.kevintyrrell.model.diablo.item.ItemType;
+import com.kevintyrrell.model.diablo.rune.Rune;
+import com.kevintyrrell.model.util.JSONLoader;
+import com.kevintyrrell.model.util.Queryable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

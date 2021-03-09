@@ -18,14 +18,14 @@
 
 package com.kevintyrrell;
 
-import com.kevintyrrell.diablo.rune.RuneMap;
+import com.kevintyrrell.model.diablo.rune.RuneMap;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
-import static com.kevintyrrell.diablo.rune.Rune.*;
+import static com.kevintyrrell.model.diablo.rune.Rune.*;
 
 /**
  * JUnit testing class.

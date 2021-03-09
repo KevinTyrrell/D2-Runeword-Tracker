@@ -16,10 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevintyrrell.diablo.runeword;
+package com.kevintyrrell.model.diablo.runeword;
 
-import com.kevintyrrell.diablo.rune.ReadOnlyRuneMap;
-import com.kevintyrrell.util.EnumExtendable;
+import com.kevintyrrell.model.diablo.rune.ReadOnlyRuneMap;
+import com.kevintyrrell.model.util.EnumExtendable;
 
 import java.util.*;
 import java.util.function.Function;

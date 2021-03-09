@@ -19,7 +19,7 @@
 package com.kevintyrrell;
 
 import com.kevintyrrell.lang.Locale;
-import com.kevintyrrell.util.CachedValue;
+import com.kevintyrrell.model.util.CachedValue;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

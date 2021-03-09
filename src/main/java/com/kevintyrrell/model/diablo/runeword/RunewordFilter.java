@@ -16,11 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevintyrrell.diablo.runeword;
+package com.kevintyrrell.model.diablo.runeword;
 
-import com.kevintyrrell.diablo.item.ItemType;
-import com.kevintyrrell.diablo.rune.ReadOnlyRuneMap;
-import com.kevintyrrell.util.Saveable;
+import com.kevintyrrell.model.diablo.item.ItemType;
+import com.kevintyrrell.model.diablo.rune.ReadOnlyRuneMap;
+import com.kevintyrrell.model.util.Saveable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;

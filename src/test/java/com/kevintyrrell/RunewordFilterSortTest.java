@@ -18,12 +18,12 @@
 
 package com.kevintyrrell;
 
-import com.kevintyrrell.diablo.rune.Rune;
-import com.kevintyrrell.diablo.rune.RuneMap;
-import com.kevintyrrell.diablo.runeword.RunewordLoader;
-import com.kevintyrrell.diablo.runeword.RunewordSorter;
-import com.kevintyrrell.diablo.runeword.Runeword;
-import com.kevintyrrell.diablo.runeword.RunewordFilter;
+import com.kevintyrrell.model.diablo.rune.Rune;
+import com.kevintyrrell.model.diablo.rune.RuneMap;
+import com.kevintyrrell.model.diablo.runeword.RunewordLoader;
+import com.kevintyrrell.model.diablo.runeword.RunewordSorter;
+import com.kevintyrrell.model.diablo.runeword.Runeword;
+import com.kevintyrrell.model.diablo.runeword.RunewordFilter;
 import org.junit.Before;
 import org.junit.Test;
 

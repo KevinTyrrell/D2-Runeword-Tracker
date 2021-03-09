@@ -16,9 +16,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevintyrrell.diablo.item;
+package com.kevintyrrell.model.diablo.item;
 
-import com.kevintyrrell.util.EnumExtendable;
+import com.kevintyrrell.model.util.EnumExtendable;
 
 import java.util.*;
 import java.util.stream.Stream;

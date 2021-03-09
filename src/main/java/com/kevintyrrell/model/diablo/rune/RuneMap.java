@@ -16,10 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevintyrrell.diablo.rune;
+package com.kevintyrrell.model.diablo.rune;
 
-import com.kevintyrrell.util.CachedValue;
-import com.kevintyrrell.util.Saveable;
+import com.kevintyrrell.model.util.CachedValue;
+import com.kevintyrrell.model.util.Saveable;
 
 import java.util.Collections;
 import java.util.EnumMap;

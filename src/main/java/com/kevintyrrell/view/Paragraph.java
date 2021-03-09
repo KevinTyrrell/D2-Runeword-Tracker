@@ -18,29 +18,21 @@
 
 package com.kevintyrrell.view;
 
-import java.util.Collections;
-
-import static java.util.Collections.nCopies;
-import static java.lang.String.join;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
- * ...
+ * Immutable multi-line String which can be aligned in a multitude of ways.
  *
- * TODO: Add Color: https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
- *
- * @since 3.0
+ * @since 2.0
  */
-public final class ParagraphBuilder
+public class Paragraph
 {
-    private Alignment alignment = Alignment.LEFT;
+    private final List<String> lines;
+    private final int width;
 
-    enum Alignment
+    public Paragraph(final Stream<String> lines, final int width)
     {
-        LEFT, CENTER, RIGHT, JUSTIFIED;
-    }
 
-    public static void main(String[] args)
-    {
-        String.join()
     }
 }

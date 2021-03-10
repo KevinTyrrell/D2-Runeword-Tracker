@@ -21,6 +21,7 @@ package com.kevintyrrell.model.diablo.runeword;
 import com.kevintyrrell.model.diablo.ItemType;
 import com.kevintyrrell.model.diablo.rune.ReadOnlyRuneMap;
 import com.kevintyrrell.model.util.Saveable;
+import com.kevintyrrell.model.util.Streamable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,7 +35,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-public final class RunewordFilter implements Saveable
+public final class RunewordFilter implements Streamable<Runeword>, Saveable
 {
     /* Reference to container of runewords. */
     private final Collection<Runeword> runewords;
@@ -103,13 +104,15 @@ public final class RunewordFilter implements Saveable
     }
 
     /**
-     * Evaluates the filters and outputs the current subset of non-filtered runewords.
+     * Streams and filters over all Runewords.
+     * Runewords can be filtered out by the following:
+     *  * Name: specific Runewords banned.
+     *  * Progress: progress towards the runeword is insufficient.
+     *  * Type: no remaining filtered item types.
      *
-     * Due to needing to check player rune progress, it is not possible to cache this operation.
-     *
-     * @return Stream of non-filtered runewords.
+     * @return Stream of Runewords after filtration.
      */
-    public Stream<Runeword> getRunewords()
+    @Override public Stream<Runeword> stream()
     {
         return runewords.stream()
                 .filter(rw -> !filteredWords.contains(rw))

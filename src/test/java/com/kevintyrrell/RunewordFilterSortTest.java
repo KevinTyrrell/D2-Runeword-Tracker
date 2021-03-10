@@ -50,7 +50,7 @@ public class RunewordFilterSortTest
 
     public void sort()
     {
-        sorted = sorter.sort(filter.getRunewords())
+        sorted = sorter.flatMap(filter.stream())
                 .collect(Collectors.toList());
     }
 

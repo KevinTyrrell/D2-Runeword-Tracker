@@ -20,6 +20,7 @@ package com.kevintyrrell.model.diablo.runeword;
 
 import com.kevintyrrell.model.diablo.rune.ReadOnlyRuneMap;
 import com.kevintyrrell.model.util.EnumExtendable;
+import com.kevintyrrell.model.util.Streamable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -33,7 +34,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-public class RunewordSorter
+public class RunewordSorter implements Streamable<Runeword>
 {
     /* Default sorting method. */
     private Sort currentSort = Sort.BY_RARITY;
@@ -63,13 +64,24 @@ public class RunewordSorter
     }
 
     /**
+     * Unsupported operation for RunewordSorter.
+     * @return null;
+     */
+    @Override public Stream<Runeword> stream()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Sorts a subset of runewords by the current sort setting.
      *
-     * @param runewords Runewords to be sorted.
+     * @param stream Stream of runewords to sort.
+     * @return Stream of sorted runewords.
+     * @see Stream#flatMap(Function)
      */
-    public Stream<Runeword> sort(final Stream<Runeword> runewords)
+    @Override public Stream<Runeword> flatMap(final Stream<Runeword> stream)
     {
-        return requireNonNull(runewords).sorted(comparatorMap.get(currentSort));
+        return requireNonNull(stream).sorted(comparatorMap.get(currentSort));
     }
 
     /**

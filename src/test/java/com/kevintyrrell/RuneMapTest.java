@@ -18,10 +18,15 @@
 
 package com.kevintyrrell;
 
+import com.kevintyrrell.model.diablo.rune.Rune;
 import com.kevintyrrell.model.diablo.rune.RuneMap;
+import com.kevintyrrell.model.diablo.runeword.Runeword;
+import com.kevintyrrell.model.diablo.runeword.RunewordLoader;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -85,5 +90,27 @@ public class RuneMapTest
         r2.addRunes(Stream.of(SOL, SOL, SOL, SOL));
         r1.addRunes(Stream.of(SOL, SOL, SOL, SOL, SOL, SOL, SOL, SOL, SOL, RAL, VEX, AMN));
         assertEquals(1.0, r1.progressTowards(r2), 0.0);
+    }
+
+    @Test public void tossableRunesTest1()
+    {
+        r1.addRunes(Stream.of(ETH, KO, KO, TIR, TIR, TIR, TIR));
+        final RunewordLoader loader = new RunewordLoader();
+        final Stream<Runeword> rws = Stream.of(
+                loader.fromString("grief"), loader.fromString("leaf"), loader.fromString("strength"));
+        final Map<Rune, Integer> expected = new EnumMap<>(Rune.class);
+        expected.put(KO, 2);
+        expected.put(TIR, 1);
+        assertEquals(expected, r1.tossableRunes(rws));
+    }
+
+    @Test public void tossableRunesTest2()
+    {
+        r1.addRunes(Stream.of(HEL, HEL, BER, OHM, TAL, AMN));
+        final RunewordLoader loader = new RunewordLoader();
+        final Stream<Runeword> rws = Stream.of(loader.fromString("stealth"));
+        final Map<Rune, Integer> expected = new EnumMap<>(Rune.class);
+        expected.put(AMN, 1);
+        assertEquals(expected, r1.tossableRunes(rws));
     }
 }

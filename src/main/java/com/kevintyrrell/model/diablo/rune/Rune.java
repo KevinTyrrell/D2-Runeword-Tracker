@@ -20,6 +20,12 @@ package com.kevintyrrell.model.diablo.rune;
 
 import com.kevintyrrell.model.util.EnumExtendable;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
  * Defines all 26 Runes in Diabo 2, along with related drop rates.
  *
@@ -73,6 +79,12 @@ public enum Rune
      * Extension of the enum, adding additional functionality.
      */
     public static final EnumExtendable<Rune> extension = new EnumExtendable<>(Rune.class);
+
+    /* All runes corresponding to their tiers(-1=low, 0=mid, 1=high). */
+    private static final Map<Rune, Integer> tiers = extension.values().stream()
+            .collect(Collectors.collectingAndThen(Collectors.toMap(
+                    Function.identity(), r -> (int)((double)r.ordinal() / extension.size() * 3) - 1,
+                    Integer::max, () -> new EnumMap<>(Rune.class)), Collections::unmodifiableMap));
     
     /**
      * @param name Name of the rune.
@@ -98,7 +110,7 @@ public enum Rune
      */
     public int getTier()
     {
-        return (int)((double)ordinal() / extension.size() * 3) - 1;
+        return tiers.get(this);
     }
 
     /**

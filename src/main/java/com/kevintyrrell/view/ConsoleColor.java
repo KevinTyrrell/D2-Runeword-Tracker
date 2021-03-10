@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 3.0
  */
-enum ConsoleColor
+public  enum ConsoleColor
 {
     //Color end string, color reset
     RESET("\033[0m"),
@@ -101,6 +101,11 @@ enum ConsoleColor
     MAGENTA_BACKGROUND_BRIGHT("\033[0;105m"),   // MAGENTA
     CYAN_BACKGROUND_BRIGHT("\033[0;106m"),      // CYAN
     WHITE_BACKGROUND_BRIGHT("\033[0;107m");     // WHITE
+
+    /**
+     * Escape sequence which denotes a console color wrapped around a string.
+     */
+    public static final String ESCAPE_COLOR_FORMAT = "\\033\\[(?:\\d;)?\\d+m(.+?)\\033\\[0m";
 
     /**
      * Code which changes the color of the following text.

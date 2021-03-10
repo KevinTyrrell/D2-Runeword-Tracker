@@ -80,32 +80,30 @@ public interface JSONLoader
      */
     static String find(final JSONAware root, final String path)
     {
-        final String[] route = requireNonNull(path).split("/");
         Object current = requireNonNull(root);
-        for (final String s : route)
+        for (final String key : requireNonNull(path).split("/"))
         {
             if (current instanceof JSONObject)
-                current = ((JSONObject) current).get(s);
+                current = ((JSONObject) current).get(key);
             else if (current instanceof JSONArray)
             {
                 try
                 {
                     final JSONArray jsa = (JSONArray)current;
-                    final int index = Integer.parseInt(s);
+                    final int index = Integer.parseInt(key);
                     if (index < 0 || index >= jsa.size())
-                        throw new IllegalArgumentException("JSON path index is out of bounds: ".concat(s));
+                        throw new IllegalArgumentException("JSON path index is out of bounds: ".concat(key));
                     current = jsa.get(index);
                 }
                 catch (final NumberFormatException e)
                 {
-                    throw new IllegalArgumentException("JSON path index is invalid: ".concat(s));
+                    throw new IllegalArgumentException("JSON path index is invalid: ".concat(key));
                 }
             }
             else throw new UnsupportedOperationException();
         }
 
-        if (!(current instanceof String))
-            throw new IllegalArgumentException("Inner JSON path was invalid: ".concat(path));
+        assert current instanceof String; // Should be impossible.
         return (String)current;
     }
 }

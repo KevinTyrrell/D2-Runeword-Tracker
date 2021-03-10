@@ -26,7 +26,10 @@ import static java.lang.String.join;
 /**
  * ...
  *
- * TODO: Add Color: https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+ * TODO: \n Newline imposes a considerable challenge.
+ * TODO: Newline should be processed at the very end.
+ * TODO: It poses a problem when counting the number
+ * TODO: of characters OR when it disrupts text alignment.
  *
  * @since 3.0
  */
@@ -37,10 +40,5 @@ public final class ParagraphBuilder
     enum Alignment
     {
         LEFT, CENTER, RIGHT, JUSTIFIED;
-    }
-
-    public static void main(String[] args)
-    {
-        String.join()
     }
 }

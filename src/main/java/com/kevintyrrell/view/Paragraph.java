@@ -33,6 +33,7 @@ public class Paragraph
 
     public Paragraph(final Stream<String> lines, final int width)
     {
-
+        this.lines = null;
+        this.width = 0;
     }
 }

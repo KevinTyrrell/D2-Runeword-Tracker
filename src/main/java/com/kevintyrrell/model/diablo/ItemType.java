@@ -16,7 +16,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.kevintyrrell.model.diablo.item;
+package com.kevintyrrell.model.diablo;
 
 import com.kevintyrrell.model.util.EnumExtendable;
 

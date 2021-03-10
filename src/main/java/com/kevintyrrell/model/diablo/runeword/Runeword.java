@@ -18,7 +18,7 @@
 
 package com.kevintyrrell.model.diablo.runeword;
 
-import com.kevintyrrell.model.diablo.item.ItemType;
+import com.kevintyrrell.model.diablo.ItemType;
 import com.kevintyrrell.model.diablo.rune.Rune;
 import com.kevintyrrell.model.diablo.rune.RuneMap;
 import com.kevintyrrell.model.diablo.rune.ReadOnlyRuneMap;

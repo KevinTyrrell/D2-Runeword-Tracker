@@ -41,7 +41,7 @@ public class RuneMapTest
 {
     private RuneMap r1, r2;
 
-    @Before public void setUp() throws Exception
+    @Before public void setUp()
     {
         r1 = new RuneMap();
         r2 = new RuneMap();

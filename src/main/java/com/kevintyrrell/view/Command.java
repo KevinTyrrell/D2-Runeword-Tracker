@@ -18,6 +18,8 @@
 
 package com.kevintyrrell.view;
 
+import com.kevintyrrell.lang.Locale;
+import com.kevintyrrell.model.util.CachedValue;
 import com.kevintyrrell.model.util.EnumExtendable;
 
 /**
@@ -27,12 +29,23 @@ import com.kevintyrrell.model.util.EnumExtendable;
  */
 public enum Command
 {
-
+    ADD("commands/add/command", "commands/add/hint")
 
     ;
 
+    private final String name;
+    private final CachedValue<String> hint;
+
+    Command(final String namePath, final String hintPath)
+    {
+        assert namePath != null;
+        assert hintPath != null;
+        name = Locale.get(namePath);
+        hint = Locale.get(hintPath);
+    }
+
     /**
-     * Extension of the enum, adding additional functionality.
+     * Extension of the enum, adding additio nal functionality.
      */
-    public static final EnumExtendable extension = new EnumExtendable(Command.class);
+    public static final EnumExtendable<Command> extension = new EnumExtendable<>(Command.class);
 }

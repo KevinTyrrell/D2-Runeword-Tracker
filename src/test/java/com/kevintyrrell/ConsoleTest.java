@@ -20,7 +20,7 @@ package com.kevintyrrell;
 
 import com.kevintyrrell.lang.Locale;
 import com.kevintyrrell.model.util.CachedValue;
-import com.kevintyrrell.view.ConsoleColor;
+import com.kevintyrrell.view.console.ConsoleColor;
 import org.junit.Test;
 
 import java.util.Arrays;

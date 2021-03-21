@@ -33,15 +33,10 @@ public enum Command
 
     ;
 
-    private final String name;
-    private final CachedValue<String> hint;
-
     Command(final String namePath, final String hintPath)
     {
         assert namePath != null;
         assert hintPath != null;
-        name = Locale.get(namePath);
-        hint = Locale.get(hintPath);
     }
 
     /**

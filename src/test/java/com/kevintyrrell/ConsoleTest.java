@@ -20,6 +20,8 @@ package com.kevintyrrell;
 
 import com.kevintyrrell.lang.Locale;
 import com.kevintyrrell.model.util.CachedValue;
+import com.kevintyrrell.view.Alignment;
+import com.kevintyrrell.view.Paragraph;
 import com.kevintyrrell.view.console.ConsoleColor;
 import org.junit.Test;
 
@@ -94,5 +96,27 @@ public class ConsoleTest
 
         assertTrue(m.find());
         assertEquals(str3, m.group(1));
+    }
+
+    @Test public void consoleTest6()
+    {
+        final Alignment a1 = Alignment.LEFT;
+        assertEquals("    ", a1.align("", 4));
+        assertEquals("PANDA   ", a1.align("PANDA", 8));
+        assertEquals("PANDA", a1.align("PANDA", 5));
+        final Alignment a2 = Alignment.RIGHT;
+        assertEquals("    ", a2.align("", 4));
+        assertEquals("   PANDA", a2.align("PANDA", 8));
+        assertEquals("PANDA", a2.align("PANDA", 5));
+        final Alignment a3 = Alignment.CENTER;
+        assertEquals("    ", a3.align("", 4));
+        assertEquals("PANDA ", a3.align("PANDA", 6));
+        assertEquals("  PANDA  ", a3.align("PANDA", 9));
+        assertEquals("PANDA", a3.align("PANDA", 5));
+        final Alignment a4 = Alignment.JUSTIFIED;
+        assertEquals("    ", a4.align("", 4));
+        assertEquals("PANDA     STRIPES", a4.align("PANDA STRIPES", 17));
+        assertEquals("PANDA ", a4.align("PANDA", 6));
+        assertEquals("PANDA", a4.align("PANDA", 5));
     }
 }

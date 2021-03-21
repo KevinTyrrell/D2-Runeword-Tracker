@@ -19,7 +19,6 @@
 package com.kevintyrrell.view;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Immutable multi-line String which can be aligned in a multitude of ways.
@@ -28,10 +27,14 @@ import java.util.stream.Stream;
  */
 public class Paragraph
 {
+
+
+    /* Immutable list of each line of the paragraph. */
     private final List<String> lines;
+    /* Maximum width of the paragraph. */
     private final int width;
 
-    public Paragraph(final Stream<String> lines, final int width)
+    public Paragraph(final String content, final int width, final Alignment alignment)
     {
         this.lines = null;
         this.width = 0;

@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Defines an pseudo-extension for enumerations.
+ * Defines a pseudo-extension for enumerations
  *
  * @since 3.0
  */
@@ -39,9 +39,9 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
     private final CachedValue<Map<String, T>> stringMap;
 
     /**
-     * Constructs an extension of the Enum, having been provided the class.
+     * Constructs an extension of the Enum, having been provided the class
      *
-     * @param cls Class of the enum.
+     * @param cls Class of the enum
      */
     public EnumExtendable(final Class<T> cls)
     {
@@ -65,15 +65,15 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
     }
 
     /**
-     * Keys the specified enum value into the string map.
-     *
+     * Keys the specified enum value into the string map
+     * <p>
      * By default, the keys are instantiated by the following:
      *      `value.toString.toLowerCase()`
+     * <p>
+     * Override this method to allow for control over keying
      *
-     * Override this method to allow for control over keying.
-     *
-     * @param value Value to be parsed.
-     * @return Key used for enum value lookups by string.
+     * @param value Value to be parsed
+     * @return Key used for enum value lookups by string
      */
     protected String stringMapKeyer(final T value)
     {
@@ -82,8 +82,8 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
     }
 
     /**
-     * Read-only list of all values in the enum.
-     *
+     * Read-only list of all values in the enum
+     * <p>
      * This method should be used as an alternative to Enum#values().
      * Enum#values() generates a new array each call, and should be avoided.
      *
@@ -95,14 +95,14 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
     }
 
     /**
-     * Queries the number of values in the enumeration.
-     *
+     * Queries the number of values in the enumeration
+     * <p>
      * With normal enums this operation can only be performed by calling:
      *      *  `values().length`, which has a linear overhead of complexity and storage.
      *      *  or manually referencing the last enum element and calling ordinal(),
      *      *  which is bug prone when enum values are shifted in order/removed/added.
      *
-     * @return Number of values in the enumeration.
+     * @return Number of values in the enumeration
      */
     public int size()
     {
@@ -110,14 +110,14 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
     }
 
     /**
-     * Retrieves an enum value based its respective ordinal value.
-     *
+     * Retrieves an enum value based its respective ordinal value
+     * <p>
      * Enum ordinal values start at 0, increase sequentially, and
      * are assigned in the order of which the enum values are defined.
      *
      * @see Enum#ordinal()
-     * @param ordinal Ordinal to query.
-     * @return Enum element associated with the ordinal value.
+     * @param ordinal Ordinal to query
+     * @return Enum element associated with the ordinal value
      */
     public T fromOrdinal(final int ordinal)
     {
@@ -128,19 +128,19 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
     }
 
     /**
-     * Parses the formal name of an enum value.
-     *
+     * Parses the formal name of an enum value
+     * <p>
      * e.g. 'APPLE' -> 'Apple'
      *
      * @see Enum#name()
-     * @param value Enum value to parse.
-     * @return formal name of the enum value, based on name().
+     * @param value Enum value to parse
+     * @return formal name of the enum value, based on name()
      */
     public static String formalName(final Enum<?> value)
     {
         final String name = requireNonNull(value.name()).toLowerCase();
         final char first = name.charAt(0);
-        assert first >= 'a' && first <= 'z'; // This should be guaranteed thanks to the compiler.
+        assert first >= 'a' && first <= 'z'; // This should be guaranteed thanks to the compiler
         return Character.toUpperCase(first) + name.substring(1);
     }
 
@@ -151,7 +151,7 @@ public class EnumExtendable<T extends Enum<?>> implements Queryable<T>
      * By default, map keys are set to Object#toString(). This behavior
      * can be changed by overloading StringToValue#createStringMap().
      *
-     * @return Read-only map associating string representations to object values.
+     * @return Read-only map associating string representations to object values
      * @see Queryable#createStringMap(Stream, Function)
      */
     @Override public Map<String, T> stringMap()

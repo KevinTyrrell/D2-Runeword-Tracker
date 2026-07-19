@@ -119,4 +119,11 @@ public class ConsoleTest
         assertEquals("PANDA ", a4.align("PANDA", 6));
         assertEquals("PANDA", a4.align("PANDA", 5));
     }
+
+    @Test public void consoleTest7()
+    {
+        final String test = "My name is Kevin and I am a programmer.";
+        final Pattern p = Pattern.compile("^\\w+");
+        p.splitAsStream(test).forEach(str -> System.out.println("|" + str + "|"));
+    }
 }

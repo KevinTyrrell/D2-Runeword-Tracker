@@ -18,6 +18,7 @@
 
 package com.kevintyrrell;
 
+import com.kevintyrrell.model.diablo.ItemType;
 import com.kevintyrrell.model.diablo.rune.Rune;
 import com.kevintyrrell.model.diablo.rune.RuneMap;
 import com.kevintyrrell.model.diablo.runeword.RunewordLoader;
@@ -27,9 +28,9 @@ import com.kevintyrrell.model.diablo.runeword.RunewordFilter;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -139,5 +140,34 @@ public class RunewordFilterSortTest
         filter.setProgressThreshold(0);
         sort();
         assertEquals(loader.fromString("breath_of_the_dying"), sorted.get(sorted.size() - 1));
+    }
+
+    @Test public void runewordFilterSortTest8()
+    {
+        final List<Runeword> rws = new ArrayList<>(loader.stringMap().values())
+                .stream().sorted((o1, o2) -> {
+                    final double d1 = o1.appraise();
+                    final double d2 = o2.appraise();
+                    return Double.compare(d1, d2);
+                })
+                .collect(Collectors.toList());
+
+        for (int i = rws.size() - 1; i >= 0; i--)
+        {
+            final Runeword rw = rws.get(i);
+            System.out.printf("Rank #%2d %s [%s] (%.0f)\n", rws.size() - i, rw, rw.getWord(), rw.appraise());
+        }
+    }
+
+    @Test public void runewordFilterSortTest9()
+    {
+        loader.stringMap().values().stream()
+                .filter(rw -> rw.getTypes().contains(ItemType.POLEARM))
+                .sorted((o1, o2) -> {
+                    final double d1 = o1.appraise();
+                    final double d2 = o2.appraise();
+                    return Double.compare(d1, d2);
+                })
+                .forEach(e -> System.out.printf("%s [%s]\n", e.getName(), e.getWord()));
     }
 }

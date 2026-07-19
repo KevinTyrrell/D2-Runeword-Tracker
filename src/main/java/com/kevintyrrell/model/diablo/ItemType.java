@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * Defines all possible item types in Diablo 2.
+ * Defines all possible item types in Diablo 2
  *
  * @since 2.0
  */
@@ -51,28 +51,28 @@ public enum ItemType
     SWORD(MELEE, 6),
     WAND(MELEE, 2);
 
-    /* Name of the Item type. */
+    /* Name of the Item type */
     private final String name;
-    /* Max amount of sockets the Item type can have. */
+    /* Max amount of sockets the Item type can have */
     private int sockets;
-    /* Item types which encompass other item types. */
+    /* Item types which encompass other item types */
     private Set<ItemType> children;
 
     /**
-     * Extension of the enum, adding additional functionality.
+     * Extension of the enum, adding additional functionality
      */
     public static final EnumExtendable<ItemType> extension = new EnumExtendable<>(ItemType.class);
 
-    static // Tree currently only tracks parents. Reverse direction to only track children.
+    static // Tree currently only tracks parents. Reverse direction to only track children
     {
-        /* Setup all parental relationships -- EnumMap is extremely low overhead. */
+        /* Setup all parental relationships -- EnumMap is extremely low overhead */
         final EnumMap<ItemType, ItemType> parentMap = new EnumMap<>(ItemType.class);
         final EnumMap<ItemType, Set<ItemType>> childrenMap = new EnumMap<>(ItemType.class);
         for (final ItemType child : extension.values())
         {
             if (child.children == null) continue;
-            final ItemType parent = child.children.iterator().next(); // constructor guarantees safety.
-            parentMap.put(child, parent); // track parent so we don't need to use iterator anymore.
+            final ItemType parent = child.children.iterator().next(); // constructor guarantees safety
+            parentMap.put(child, parent); // track parent so we don't need to use iterator anymore
             Set<ItemType> children = childrenMap.get(parent);
             if (children == null)
             {
@@ -80,12 +80,12 @@ public enum ItemType
                 childrenMap.put(parent, children);
             }
 
-            /* Reject children that are containers. */
+            /* Reject children that are containers */
             if (child.isConcrete()) children.add(child);
         }
-        parentMap.keySet().forEach(k -> k.children = null); // Bereave all parents.
+        parentMap.keySet().forEach(k -> k.children = null); // Bereave all parents
 
-        /* Add all distant ancestors to each parent into their children collection. */
+        /* Add all distant ancestors to each parent into their children collection */
         for (final Map.Entry<ItemType, ItemType> itEntry : parentMap.entrySet())
         {
             ItemType child = itEntry.getValue(), parent = parentMap.get(child);
@@ -93,20 +93,20 @@ public enum ItemType
 
             while (parent != null)
             {
-                /* It shouldn't be possible for the map calls to fail. */
+                /* It shouldn't be possible for the map calls to fail */
                 final Set<ItemType> children = childrenMap.get(parent);
-                /* Avoid adding any of the container types. */
+                /* Avoid adding any of the container types */
                 childrenMap.get(child).stream()
                         .filter(ItemType::isConcrete)
                         .forEach(children::add);
-                child = parent; parent = parentMap.get(parent); // Iterate upwards.
+                child = parent; parent = parentMap.get(parent); // Iterate upwards
             }
         }
-        /* Ensure all children all read-only. */
+        /* Ensure all children all read-only */
         childrenMap.forEach((key, value) -> key.children = Collections.unmodifiableSet(value));
     }
 
-    /* Constructs a root-level item-type. */
+    /* Constructs a root-level item-type */
     ItemType() { this(null, -1); }
     ItemType(final ItemType parent) { this(parent, -1); }
     ItemType(final int sockets) { this(null, sockets); }
@@ -115,12 +115,12 @@ public enum ItemType
     {
         name = EnumExtendable.formalName(this);
         this.sockets = sockets;
-        if (parent != null) // Temporarily save parent reference without having an instance variable.
+        if (parent != null) // Temporarily save parent reference without having an instance variable
             children = Collections.singletonMap(parent, null).keySet();
     }
 
     /**
-     * @return Children of the item type.
+     * @return Children of the item type
      */
     public Set<ItemType> getChildren()
     {
@@ -128,12 +128,12 @@ public enum ItemType
     }
 
     /**
-     * Creates a new stream of the item type and all of its children.
-     *
+     * Creates a new stream of the item type and all of its children
+     * <p>
      * If the item type being included in the returned
      * stream is undesired, call #getChildren() instead.
      *
-     * @return Stream of the item type and all of its children.
+     * @return Stream of the item type and all of its children
      * @see #getChildren()
      */
     public Stream<ItemType> stream()
@@ -144,9 +144,9 @@ public enum ItemType
     }
 
     /**
-     * Indicates whether this item type is a not a container of item types.
+     * Indicates whether this item type is a not a container of item types
      *
-     * @return true if the item type is not an item type container.
+     * @return true if the item type is not an item type container
      */
     public boolean isConcrete()
     {
@@ -154,7 +154,7 @@ public enum ItemType
     }
 
     /**
-     * @return Name of the item type.
+     * @return Name of the item type
      */
     public String getName()
     {
@@ -162,7 +162,7 @@ public enum ItemType
     }
 
     /**
-     * @return Maximum sockets bases the item type can have.
+     * @return Maximum sockets bases the item type can have
      */
     public int getSockets()
     {
@@ -170,7 +170,7 @@ public enum ItemType
     }
 
     /**
-     * @return String representation of the item type.
+     * @return String representation of the item type
      */
     @Override public String toString()
     {

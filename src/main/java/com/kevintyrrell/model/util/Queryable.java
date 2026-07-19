@@ -27,9 +27,9 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Defines an interface to facilitate Strings -> Values.
+ * Defines an interface to facilitate Strings -> Values
  *
- * @param <T> Type of values which can be queried..
+ * @param <T> Type of values which can be queried
  * @since 3.0
  */
 public interface Queryable<T>
@@ -37,26 +37,26 @@ public interface Queryable<T>
     /**
      * Read-only map which associates string representations
      * of objects to their respective constant object values.
-     *
+     * <p>
      * By default, map keys are set to Object#toString(). This behavior
      * can be changed by overloading StringToValue#createStringMap().
-     *
+     * <p>
      * This method should be implemented such that the returned map is
      * an instance variable of the class which is implementing this method.
      *
-     * @return Read-only map associating string representations to object values.
+     * @return Read-only map associating string representations to object values
      * @see Queryable#createStringMap(Stream, Function)
      */
     Map<String, T> stringMap();
 
     /**
-     * Retrieves an object value based on its respective string representation.
-     *
+     * Retrieves an object value based on its respective string representation
+     * <p>
      * By default, map keys are set to Object#toString(). This behavior
      * can be changed by overloading StringToValue#createStringMap().
      *
-     * @param str String representation of the desired object value.
-     * @return Object value corresponding to the string, or null.
+     * @param str String representation of the desired object value
+     * @return Object value corresponding to the string, or null
      * @see #stringMap()
      * @see Queryable#createStringMap(Stream, Function)
      */
@@ -67,12 +67,12 @@ public interface Queryable<T>
     }
 
     /**
-     * Creates an immutable map associating Strings -> Values.
-     *
+     * Creates an immutable map associating Strings -> Values
+     * <p>
      * The parameter list of values should be complete and immutable.
      * The resulting map should then be saved as an instance variable,
      * and provided as the return value for calls to #stringMap().
-     *
+     * <p>
      * Keys are dictated by the value(s) returned by the specified callback.
      *
      * @param values Values to be associated in the map.
@@ -88,12 +88,12 @@ public interface Queryable<T>
     }
 
     /**
-     * Creates an immutable map associating Strings -> Values.
-     *
+     * Creates an immutable map associating Strings -> Values
+     * <p>
      * The parameter list of values should be complete and immutable.
      * The resulting map should then be saved as an instance variable,
      * and provided as the return value for calls to #stringMap().
-     *
+     * <p>
      * By default, map keys are set to enum.toString(). This behavior
      * can be changed by calling the overloaded function `createStringMap`.
      *
@@ -108,7 +108,7 @@ public interface Queryable<T>
         return toReverseMap(requireNonNull(values), Object::toString);
     }
 
-    /* Helper function for #createStringMap(). */
+    /* Helper function for #createStringMap() */
     private static <T> Map<String, T> toReverseMap(final Stream<T> values, final Function<T, String> toStringCb)
     {
         assert values != null;

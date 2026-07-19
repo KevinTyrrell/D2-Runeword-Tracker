@@ -50,7 +50,7 @@ public class RunewordLoader implements Queryable<Runeword>
         final JSONArray jo = (JSONArray)JSONLoader.parseJSON("Runewords");
         assert jo != null;
         stringMap = Queryable.createStringMap(
-                /* IntStream is require here to avoid generic casting in a Stream#map call. */
+                /* IntStream is required here to avoid generic casting in a Stream#map call */
                 IntStream.range(0, jo.size())
                         .mapToObj(i -> loadRuneword((JSONObject)jo.get(i))), rw ->
                 {
@@ -60,7 +60,7 @@ public class RunewordLoader implements Queryable<Runeword>
                 });
     }
 
-    /* Loads a Runeword from its JSON string. */
+    /* Loads a Runeword from its JSON string */
     @SuppressWarnings("unchecked")
     private static Runeword loadRuneword(final JSONObject jsonRW)
     {
@@ -68,8 +68,14 @@ public class RunewordLoader implements Queryable<Runeword>
         final String name = (String)jsonRW.get("name");
         final int level = toIntExact(((Long)jsonRW.get("level")));
         final JSONArray jsonItemTypeArray = (JSONArray)jsonRW.get("bases");
-        final Stream<ItemType> types = ((Stream<Object>)jsonItemTypeArray.stream())
-                .map(obj -> ItemType.extension.fromString((String)obj));
+        final Stream<ItemType> types = ((Stream<Object>) jsonItemTypeArray.stream())
+                .map(obj -> {
+                    final String str = (String) obj;
+                    final ItemType type = ItemType.extension.fromString(str);
+                    if (type == null)
+                        throw new IllegalArgumentException("unrecognized item type: \"" + str + "\"");
+                    return type;
+                });
         final JSONArray jsonRuneArray = (JSONArray)jsonRW.get("runes");
         final Stream<Rune> runes = ((Stream<Object>)jsonRuneArray.stream())
                 .map(obj -> Rune.extension.fromOrdinal(toIntExact((Long)obj)));

@@ -21,7 +21,7 @@ package com.kevintyrrell;
 import java.time.LocalDate;
 
 /**
- * Application entry point.
+ * Application entry point
  *
  * @since 2.0
  */
@@ -32,7 +32,7 @@ public final class D2RunewordTracker
     }
 
     /**
-     * Version and compilation information.
+     * Version and compilation information
      */
     public static final Version VERSION = Version.INSTANCE;
 

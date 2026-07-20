@@ -38,7 +38,7 @@ public class ItemTypeTest
 {
     @Test public void itemTypeTest1()
     {
-        final EnumSet<ItemType> a = EnumSet.of(ItemType.AXE, ItemType.CLUB, ItemType.CLAW, ItemType.HAMMER, ItemType.MACE, ItemType.POLEARM, ItemType.SPEAR, ItemType.SCEPTER, ItemType.STAFF, ItemType.SWORD, ItemType.WAND);
+        final EnumSet<ItemType> a = EnumSet.of(ItemType.AXE, ItemType.CLUB, ItemType.DAGGER, ItemType.KATAR, ItemType.HAMMER, ItemType.MACE, ItemType.POLEARM, ItemType.SPEAR, ItemType.SCEPTER, ItemType.STAFF, ItemType.SWORD, ItemType.WAND);
 
         final List<ItemType> types = Collections.singletonList(ItemType.MELEE);
         final EnumSet<ItemType> b = types.stream()

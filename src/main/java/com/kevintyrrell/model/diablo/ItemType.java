@@ -46,6 +46,7 @@ public enum ItemType
     MACE(MELEE, 5),
     ORB(3), // There are no valid Runewords for Orbs (verify?)
     POLEARM(MELEE, 6),
+    SPEAR(MELEE, 6),
     SCEPTER(MELEE, 5),
     STAFF(MELEE, 6),
     SWORD(MELEE, 6),
